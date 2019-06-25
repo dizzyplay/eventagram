@@ -28,6 +28,7 @@ const hashtag_search_query="수원";
     const user_permalink_arr=hashtag_media.data.map(v=>v.permalink);
     console.log(`ID LIST search result by "${hashtag_search_query}"`);
     console.log(user_permalink_arr)
+    console.log("링크 개수 :"+user_permalink_arr.length)
 
     await InstaCrawl.get_user(user_permalink_arr)
   } catch (e) {

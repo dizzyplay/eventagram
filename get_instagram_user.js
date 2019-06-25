@@ -15,23 +15,26 @@ const options = {
 
 
 (async () => {
-  // await get_user(link_list);
+  // const res = await get_user(link_list);
 })();
 
 async function get_user(url_arr) {
-  const user_list = []
-  return url_arr.map(async (link) => {
+  let i=0;
+  url_arr.map(async (link) => {
     const res = await rq.get({uri: link});
     const $ = cheerio.load(res)
     try {
       const t = $("script[type='application/ld+json']")[0].children[0].data;
       const json = JSON.parse(t);
-      console.log(json.author.alternateName)
+      i++
+      console.log(json.author.alternateName+" - "+link+" -"+i)
     } catch (e) {
       // console.log("no script data user")
       // console.log(link)
       const lr = $("link[rel='canonical']")[0].attribs['href'];
-      console.log('@' + lr.split("/")[3] + " - No script user")
+      console.log(lr)
+      i++
+      console.log('@' + lr.split("/")[3] + " - No script user"+" - "+link+" -"+i)
     }
   });
 }
