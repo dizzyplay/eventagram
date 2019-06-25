@@ -1,25 +1,35 @@
 const request = require("request-promise");
+const InstaCrawl = require("./get_instagram_user.js")
+
+
 const base_uri = "https://graph.facebook.com/v3.2/";
 const access_token =
-  "EAAGJnboLoGoBAKi37cItZAwNUIXWhZA20AmmfXEcWQWZCjCxZCNrjPDbscI2UpWfvjWQVbHGSuCnSK2tlcgEtJV3cKJtqIJjYAwl1nJZCI0Vqt7lYfAC1zJdEsOZCK6O3A9Guw91QeCFJp7IZBGkdF9QHV4QKfbkVFOSGTOpF2h17CUbCXhfjaB0xyKo4ZBCQ2I2bCuRXcuavw4gWCkP6h157lUYS2odfB1NaeaQYMdyfwZDZD";
+  "EAAGJnboLoGoBABONMPIzVQyZBNq3SZCH8TVSMZAx8qHhHReFBexq9cq1jJ6eZAo2tdz82Vb9tqJuSuHPXTeYYS6p6BjlSfH6fYsaJp4z8fTisdZBLmyttyLtZCZAx8SYZC5803SSZCZCjd1uQMgZA3Q1ZC74IzRfhpPJgISBxZALgJsq5PkxDydBP3hpspZCYpbBNZCqyIqMBJdXIZCGhh6AkKIyQX0vZAvuTsmv6VZASSxmiHeZBhungZDZD";
+
+const hashtag_search_query="수원";
 
 (async () => {
   try {
     const user_id = await get_user_id(access_token);
-    console.log(user_id);
     const business_id = await get_business_id(user_id, access_token);
     console.log("business id: " + business_id);
     const hashtag_id = await search_hashtag_and_get_id(
       business_id,
       access_token,
-      "오그래놀라"
+      hashtag_search_query
     );
-    const res = await get_recently_hashtag_media(
+    console.log(hashtag_id)
+    const hashtag_media = await get_recently_hashtag_media(
       hashtag_id,
       business_id,
       access_token
     );
-    console.log(res);
+    // console.log(hashtag_media_res)
+    const user_permalink_arr=hashtag_media.data.map(v=>v.permalink);
+    console.log(`ID LIST search result by "${hashtag_search_query}"`);
+    console.log(user_permalink_arr)
+
+    await InstaCrawl.get_user(user_permalink_arr)
   } catch (e) {
     console.log(e);
   }
@@ -86,7 +96,7 @@ async function get_recently_hashtag_media(
   fields_str
 ) {
   if (!fields_str) {
-    fields_str = "id,like_count,media_url,permalink";
+    fields_str = "id,like_count,media_url,permalink,caption";
   }
   const uri = base_uri + hashtag_id + "/recent_media";
   const options = {
@@ -99,6 +109,5 @@ async function get_recently_hashtag_media(
   };
 
   const res = await request.get(options);
-  const json = JSON.parse(res);
-  console.log(json);
+  return JSON.parse(res);
 }
