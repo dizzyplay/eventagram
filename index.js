@@ -18,7 +18,7 @@ const hashtag_search_query="수원";
       access_token,
       hashtag_search_query
     );
-    console.log(hashtag_id)
+    console.log("해쉬태그 ID : "+hashtag_id)
     const hashtag_media = await get_recently_hashtag_media(
       hashtag_id,
       business_id,
@@ -26,7 +26,7 @@ const hashtag_search_query="수원";
     );
     // console.log(hashtag_media_res)
     const user_permalink_arr=hashtag_media.data.map(v=>v.permalink);
-    console.log(`ID LIST search result by "${hashtag_search_query}"`);
+    console.log(`hashtag search result by "${hashtag_search_query}"`);
     console.log(user_permalink_arr)
     console.log("링크 개수 :"+user_permalink_arr.length)
 
