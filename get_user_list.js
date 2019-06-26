@@ -14,8 +14,8 @@ const options = {
 };
 
 (async () => {
-  const res = await get_user(link_list);
-  console.log(res);
+  //const res = await get_user(link_list);
+  //console.log(res);
 })();
 
 async function get_user(url_arr) {
@@ -37,6 +37,7 @@ async function get_user(url_arr) {
     } catch (e) {
       // console.log("no script data user")
       // console.log(link)
+      try{
       const lr = $("link[rel='canonical']")[0].attribs["href"];
       console.log(lr);
       i++;
@@ -48,7 +49,13 @@ async function get_user(url_arr) {
         permalink: link,
         order_number: i
       });
+
+      }catch{
+        console.log('no script user 정보 가져오는 중 에러!');
+      }
     }
   }
   return list;
 }
+
+module.exports.get_user = get_user;

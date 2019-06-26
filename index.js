@@ -1,52 +1,86 @@
-const request = require("request-promise");
-const InstaCrawl = require("./get_instagram_user.js")
+const request = require('request-promise');
+const InstaCrawl = require('./get_user_list.js');
 
-
-const base_uri = "https://graph.facebook.com/v3.2/";
+const base_uri = 'https://graph.facebook.com/v3.2/';
 const access_token =
-  "EAAGJnboLoGoBABONMPIzVQyZBNq3SZCH8TVSMZAx8qHhHReFBexq9cq1jJ6eZAo2tdz82Vb9tqJuSuHPXTeYYS6p6BjlSfH6fYsaJp4z8fTisdZBLmyttyLtZCZAx8SYZC5803SSZCZCjd1uQMgZA3Q1ZC74IzRfhpPJgISBxZALgJsq5PkxDydBP3hpspZCYpbBNZCqyIqMBJdXIZCGhh6AkKIyQX0vZAvuTsmv6VZASSxmiHeZBhungZDZD";
+  'EAAGJnboLoGoBALkv1gNKSiYYofDrCqDOfZACdD5SZBUlH5joQ2YFK3k31xHMWoufUGTy4eBrh2ZA0tR5DlTi24d16RZCAZAMDaCOdKS0rbzr80ncbKQBAKxEVkr6zRh9QTeUm5NIVXSnU7bfeQfVNAZAKzf1uBS1zlr8HSRcAABxP78dtW0U7LM8oUS3yc11AZCMOEJw8PR7XdFzEuDj2SVkwPS5vj1Cr8WU7vjzFNxngZDZD';
 
-const hashtag_search_query="수원";
+const hashtag_search_query = '오그래놀라';
 
 (async () => {
   try {
     const user_id = await get_user_id(access_token);
     const business_id = await get_business_id(user_id, access_token);
-    console.log("business id: " + business_id);
+    console.log('business id: ' + business_id);
     const hashtag_id = await search_hashtag_and_get_id(
       business_id,
       access_token,
-      hashtag_search_query
+      hashtag_search_query,
     );
-    console.log("해쉬태그 ID : "+hashtag_id)
-    const hashtag_media = await get_recently_hashtag_media(
+    console.log('해쉬태그 ID : ' + hashtag_id);
+    const hashtag_media = await get_all_hashtag_media(
       hashtag_id,
       business_id,
-      access_token
+      access_token,
     );
-    // console.log(hashtag_media_res)
-    const user_permalink_arr=hashtag_media.data.map(v=>v.permalink);
+    console.log(hashtag_media);
+    const user_permalink_arr = hashtag_media.map(v => v.permalink);
     console.log(`hashtag search result by "${hashtag_search_query}"`);
-    console.log(user_permalink_arr)
-    console.log("링크 개수 :"+user_permalink_arr.length)
+    console.log(user_permalink_arr);
+    console.log('링크 개수 :' + user_permalink_arr.length);
 
-    await InstaCrawl.get_user(user_permalink_arr)
+    const result = await InstaCrawl.get_user(user_permalink_arr);
+    console.log(result);
   } catch (e) {
     console.log(e);
   }
 })();
 
+async function get_all_hashtag_media(
+  hashtag_id,
+  business_id,
+  access_token,
+  page_num,
+) {
+  let list = [];
+  const hashtag_media = await get_recently_hashtag_media(
+    hashtag_id,
+    business_id,
+    access_token,
+  );
+  list = list.concat(hashtag_media.data);
+  let data;
+  let next_page;
+  try {
+    next_page = hashtag_media.paging.next;
+  } catch {
+    next_page = 0;
+  }
+  while (next_page) {
+    res = await request.get({uri: next_page});
+    res = JSON.parse(res);
+    list = list.concat(res.data);
+    try {
+      if (res.paging.next) next_page = res.pagine.next;
+    } catch {
+      console.log('no page');
+      next_page = 0;
+    }
+  }
+  return list;
+}
+
 // 해시태그로 검색해서 해시태그 아이디 가져오기
 async function search_hashtag_and_get_id(business_id, access_token, q) {
-  const uri = base_uri + "ig_hashtag_search";
+  const uri = base_uri + 'ig_hashtag_search';
   const search_q = q;
   const options = {
     uri,
     qs: {
       q: search_q,
       user_id: business_id,
-      access_token
-    }
+      access_token,
+    },
   };
   const res = await request.get(options);
   return JSON.parse(res).data[0].id;
@@ -54,17 +88,17 @@ async function search_hashtag_and_get_id(business_id, access_token, q) {
 
 // 사용자 아이디
 async function get_user_id(access_token) {
-  const uri = base_uri + "me/accounts";
+  const uri = base_uri + 'me/accounts';
   const options = {
     uri,
     qs: {
-      access_token
-    }
+      access_token,
+    },
   };
   const res = await request.get(options);
   const json = JSON.parse(res);
   const user = json.data[0];
-  console.log("id: " + user.id, " username: " + user.name);
+  console.log('id: ' + user.id, ' username: ' + user.name);
   return user.id;
 }
 
@@ -74,9 +108,9 @@ async function get_business_id(user_id, access_token) {
   const options = {
     uri,
     qs: {
-      fields: "instagram_business_account",
-      access_token
-    }
+      fields: 'instagram_business_account',
+      access_token,
+    },
   };
   const res = await request.get(options);
   const json = JSON.parse(res);
@@ -94,19 +128,19 @@ async function get_recently_hashtag_media(
   hashtag_id,
   user_id,
   access_token,
-  fields_str
+  fields_str,
 ) {
   if (!fields_str) {
-    fields_str = "id,like_count,media_url,permalink,caption";
+    fields_str = 'id,like_count,media_url,permalink,caption';
   }
-  const uri = base_uri + hashtag_id + "/recent_media";
+  const uri = base_uri + hashtag_id + '/recent_media';
   const options = {
     uri,
     qs: {
       user_id,
       access_token,
-      fields: fields_str
-    }
+      fields: fields_str,
+    },
   };
 
   const res = await request.get(options);
