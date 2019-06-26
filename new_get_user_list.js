@@ -29,7 +29,11 @@ async function get_user(url_arr) {
       const json = JSON.parse(t);
       i++;
       console.log(json.author.alternateName + " - " + link + " -" + i);
-      list.push(json.author.alternateName + " - " + link + " -" + i);
+      list.push({
+        username: json.author.alternateName,
+        permalink: link,
+        order_number: i
+      });
     } catch (e) {
       // console.log("no script data user")
       // console.log(link)
@@ -39,9 +43,11 @@ async function get_user(url_arr) {
       console.log(
         "@" + lr.split("/")[3] + " - No script user" + " - " + link + " -" + i
       );
-      list.push(
-        "@" + lr.split("/")[3] + " - No script user" + " - " + link + " -" + i
-      );
+      list.push({
+        username: "@" + lr.split("/")[3],
+        permalink: link,
+        order_number: i
+      });
     }
   }
   return list;
