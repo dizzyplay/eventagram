@@ -1,0 +1,1 @@
+{"deviceString":"26/8.0.0; 480dpi; 1080x1920; Xiaomi; MI 5; gemini; qcom","deviceId":"android-8ac50a53155aa451","uuid":"8f482846-0394-5483-abfb-1a688db55b3c","phoneId":"dace593e-e87f-5c17-94d7-c12b43200220","adid":"4d09064e-a497-5d37-a8ae-9f22ce7c69b7","build":"LRX22C"}
