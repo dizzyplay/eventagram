@@ -60,8 +60,8 @@ server.get("/hash_feed_refresh", async (req, res) => {
 });
 
 server.get("/search_tag", async (req, res) => {
-  console.log(req.query.q);
   const q = req.query.q;
+  console.log("search hash tag: " + q);
   const result = await searchTagInfo(q);
   let hashTag = {};
   if (result) {
