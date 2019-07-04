@@ -10,7 +10,6 @@ tagSearchQueue.process(async (job, done) => {
   const search_term = job.data.search_term;
   try {
     const res: any = await refreshHashFeed(search_term, job);
-    job.progress(90);
     done(null, { data: res, search_term });
   } catch (e) {
     console.log(e);
