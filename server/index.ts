@@ -46,7 +46,7 @@ server.get("/hash_feed", async (req, res) => {
   res.send({ result });
 });
 
-server.get("/hash_feed_search", async (req, res) => {
+server.get("/hash_feed_refresh", async (req, res) => {
   console.log("hash feed search");
   const q = req.query.q;
   console.log(q);
