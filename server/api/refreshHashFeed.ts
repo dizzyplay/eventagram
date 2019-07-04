@@ -1,11 +1,10 @@
 import { readSession } from "../auth";
 
-export async function searchHashFeed(q?) {
-  if (!q) q = "오그래놀라야채";
+export async function refreshHashFeed(q, job?) {
   const ig = await readSession();
   const ts = ig.feed.tag(q);
   const arr = [];
-  const d = {};
+  job.progress(50);
   return new Promise(resolve => {
     const sub = ts.items$.subscribe(
       feed => {

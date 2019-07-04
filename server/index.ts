@@ -8,7 +8,7 @@ import HTS from "./tasks/hashQueue";
 import { saveHashTag } from "./views/view";
 import { HashTag } from "./entity/HashTag";
 import { Media } from "entity/Media";
-import { log } from "util";
+const io = require("socket.io")(7979);
 
 const express = require("express");
 const server = express();
@@ -28,10 +28,6 @@ createConnection(connectionOptions)
   })
   .catch(err => console.log(err));
 
-server.get("/test", async (req, res) => {
-  res.send();
-});
-
 server.get("/", async (req, res) => {
   console.log("ok");
   const allTags = await HashTag.find();
@@ -41,22 +37,36 @@ server.get("/", async (req, res) => {
 server.get("/hash_feed", async (req, res) => {
   console.log("hash_feed");
   const q = req.query.q;
-  const hashtag = await HashTag.findOneOrFail({ where: { name: q } });
-  const result = await Media.find({ where: { hashtag: hashtag.id } });
-  console.log(result);
+  let result = { data: [], status: "", info: "" };
+  try {
+    const hashtag = await HashTag.findOneOrFail({ where: { name: q } });
+    result.data = await Media.find({ where: { hashtag: hashtag.id } });
+    result.status = "ok";
+  } catch (e) {
+    console.log("해당 해시 태그는 db에 존재하지 않습니다");
+    result.info = "해당 해시 태그는 db에 존재하지 않습니다";
+    result.status = "404";
+  }
+  console.log(result.data.length);
   res.send({ result });
 });
 
 server.get("/hash_feed_refresh", async (req, res) => {
-  console.log("hash feed search");
+  console.log("hash feed refresh");
+  let result = { data: null, status: "", info: "" };
   const q = req.query.q;
-  console.log(q);
-  const hashTagRes = await HashTag.findOneOrFail({ where: { name: q } });
-  hashTagRes.isProcessing = true;
-  const save = await hashTagRes.save();
-  console.log(hashTagRes);
-  await HTS.add({ search_term: q });
-  res.send({ result: save });
+  try {
+    const hashTagRes = await HashTag.findOneOrFail({ where: { name: q } });
+    hashTagRes.isProcessing = true;
+    result.data = await hashTagRes.save();
+    result.status = "ok";
+    await HTS.add({ search_term: q });
+  } catch (e) {
+    console.log("해당 해시 태그는 db에 존재하지 않습니다");
+    result.info = "해당 해시 태그는 db에 존재하지 않습니다";
+    result.status = "404";
+  }
+  res.send({ result });
 });
 
 server.get("/search_tag", async (req, res) => {
@@ -84,4 +94,19 @@ server.post("/auth", async (req, res) => {
 
 server.listen(8000, () => {
   console.log("server start ...");
+});
+
+io.on("connection", async socket => {
+  socket.emit("start", { connect_state: "server connect success!!" });
+
+  socket.on("connect_success", data => {
+    console.log(data);
+  });
+  await HTS.on("progress", (job, progress) => {
+    console.log("진행중입니다 ");
+    socket.emit("progress", progress);
+  });
+  await HTS.on("completed", () => {
+    socket.emit("completed", 100);
+  });
 });
