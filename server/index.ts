@@ -8,6 +8,7 @@ import HTS from "./tasks/hashQueue";
 import { saveHashTag } from "./views/view";
 import { HashTag } from "./entity/HashTag";
 import { Media } from "entity/Media";
+import { log } from "util";
 
 const express = require("express");
 const server = express();
@@ -77,8 +78,8 @@ server.get("/search_tag", async (req, res) => {
 server.post("/auth", async (req, res) => {
   const user_id = req.body.id;
   const user_password = req.body.password;
-  await auth(user_id, user_password);
-  res.send({ user_id, user_password });
+  const result = await auth(user_id, user_password);
+  res.send({ result });
 });
 
 server.listen(8000, () => {

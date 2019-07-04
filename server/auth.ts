@@ -18,7 +18,11 @@ export async function auth(id, password) {
     };
     sessionSave(JSON.stringify(cookies), JSON.stringify(state));
   });
-  await ig.account.login(id, password);
+  try {
+    return await ig.account.login(id, password);
+  } catch (e) {
+    return {};
+  }
 }
 
 export async function readSession() {
