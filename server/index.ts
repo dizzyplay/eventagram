@@ -62,16 +62,15 @@ server.get("/search_tag", async (req, res) => {
   console.log(req.query.q);
   const q = req.query.q;
   const result = await searchTagInfo(q);
+  let hashTag = {};
   if (result) {
     const hash = {
       name: result.name,
       media_count: result.media_count
     };
-    const hashTag = await saveHashTag(hash);
-    res.send({ hashTag });
-  } else {
-    res.send({ hashTag: {} });
+    hashTag = await saveHashTag(hash);
   }
+  res.send({ hashTag });
 });
 
 // save with file about user cookies and state
