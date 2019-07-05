@@ -8,19 +8,19 @@ import HTS from "./tasks/hashQueue";
 import { saveHashTag } from "./views/view";
 import { HashTag } from "./entity/HashTag";
 import { Media } from "entity/Media";
-const io = require("socket.io")(7979);
 
-const express = require("express");
-const server = express();
+const app = require("express")();
+const http = require("http").createServer(app);
+const io = require("socket.io")(http);
 
-server.use((req, res, next) => {
+app.use((req, res, next) => {
   res.append("Access-Control-Allow-Origin", ["*"]);
   res.append("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.append("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
-server.use(bodyParser.json());
-server.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 // 이거 없으면 에러남
 createConnection(connectionOptions)
   .then(() => {
@@ -28,13 +28,13 @@ createConnection(connectionOptions)
   })
   .catch(err => console.log(err));
 
-server.get("/", async (req, res) => {
+app.get("/", async (req, res) => {
   console.log("ok");
   const allTags = await HashTag.find();
   res.send(allTags);
 });
 
-server.get("/hash_feed", async (req, res) => {
+app.get("/hash_feed", async (req, res) => {
   console.log("hash_feed");
   const q = req.query.q;
   let result = { data: [], status: "", info: "" };
@@ -51,7 +51,7 @@ server.get("/hash_feed", async (req, res) => {
   res.send({ result });
 });
 
-server.get("/hash_feed_refresh", async (req, res) => {
+app.get("/hash_feed_refresh", async (req, res) => {
   console.log("hash feed refresh");
   let result = { data: null, status: "", info: "" };
   const q = req.query.q;
@@ -69,7 +69,7 @@ server.get("/hash_feed_refresh", async (req, res) => {
   res.send({ result });
 });
 
-server.get("/search_tag", async (req, res) => {
+app.get("/search_tag", async (req, res) => {
   const q = req.query.q;
   console.log("search hash tag: " + q);
   const result = await searchTagInfo(q);
@@ -85,14 +85,14 @@ server.get("/search_tag", async (req, res) => {
 });
 
 // save with file about user cookies and state
-server.post("/auth", async (req, res) => {
+app.post("/auth", async (req, res) => {
   const user_id = req.body.id;
   const user_password = req.body.password;
   const result = await auth(user_id, user_password);
   res.send({ result });
 });
 
-server.listen(8000, () => {
+http.listen(8000, () => {
   console.log("server start ...");
 });
 
@@ -103,7 +103,7 @@ io.on("connection", async socket => {
     console.log(data);
   });
   await HTS.on("progress", (job, progress) => {
-    console.log("진행중입니다 ");
+    console.log(progress + "% 진행중입니다 ");
     socket.emit("progress", progress);
   });
   await HTS.on("completed", () => {
