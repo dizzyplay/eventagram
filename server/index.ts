@@ -64,10 +64,10 @@ app.get("/hash_feed_refresh", async (req, res) => {
     await HTS.add({ search_term: q });
   } catch (e) {
     console.log(
-      "해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다"
+      "해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다. 혹은 인증부분 확인 바람."
     );
     result.info =
-      "해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다";
+      "해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다. 혹은 인증부분 확인 바람.";
     result.status = "404";
   }
   res.send({ result });
@@ -88,6 +88,17 @@ app.get("/search_tag", async (req, res) => {
   res.send({ hashTag });
 });
 
+app.delete('/delete_tag',async (req,res)=>{
+  const id= req.body.id;
+  let result={data:null,status:200}
+  try{
+    const tag=await HashTag.findOneOrFail({where:{id}})
+    result.data = await HashTag.remove(tag)
+  }catch (e) {
+    result.status=404
+  }
+  res.send({result})
+})
 // save with file about user cookies and state
 app.post("/auth", async (req, res) => {
   const user_id = req.body.id;

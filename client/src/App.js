@@ -1,27 +1,24 @@
-import React, {useEffect, useState} from 'react';
-import {HashTag} from "./components/HashTag";
-import HashTagSearch from "./components/HashTagSearch"
-import axios from "axios"
-import styled from "styled-components"
-import {useGlobalState} from "./GlobalState";
+import React, { useEffect } from "react";
+import { HashTag } from "./components/HashTag";
+import HashTagSearch from "./components/HashTagSearch";
+import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import { getDataAction } from "./module/hashtags";
 
 function App() {
-  const [{hashList},dispatch] = useGlobalState();
-  const url = 'http://localhost:8000'
-
+  const { data, pending } = useSelector(state => state.hashtags);
+  const dispatch = useDispatch();
+  const getData = () => dispatch(getDataAction());
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios(url)
-      dispatch({type:'setHashList',value:result.data});
-    };
-    fetchData();
-  }, [])
+    getData();
+  }, []);
   return (
-      <AppContainer>
-        <HashTagSearch/>
-        <HashTagContainer>
-          {hashList.map(
-            (v, idx) => (
+    <AppContainer>
+      <HashTagSearch />
+      <HashTagContainer>
+        {pending
+          ? "loading"
+          : data.map((v, idx) => (
               <HashTag
                 key={idx}
                 name={v.name}
@@ -31,14 +28,14 @@ function App() {
                 isProsessing={v.isProcessing}
               />
             ))}
-        </HashTagContainer>
-      </AppContainer>
+      </HashTagContainer>
+    </AppContainer>
   );
 }
 
 const HashTagContainer = styled.div`
   margin: 30px;
-`
+`;
 
 const AppContainer = styled.div`
   width: 100%;
@@ -46,7 +43,6 @@ const AppContainer = styled.div`
   flex-direction: column;
   align-items: center;
   margin-top: 100px;
-`
+`;
 
 export default App;
-
