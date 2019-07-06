@@ -8,6 +8,7 @@ export async function auth(id, password) {
   ig.state.generateDevice(id);
   ig.request.end$.subscribe(async () => {
     const cookies = await ig.state.serializeCookieJar();
+    console.log(typeof cookies);
     const state = {
       deviceString: ig.state.deviceString,
       deviceId: ig.state.deviceId,
@@ -29,6 +30,7 @@ export async function readSession() {
   const ig = new ipa.IgApiClient();
   let cookies = await fs.readFileSync("cookies.txt", "utf8");
   let state: any = await fs.readFileSync("state.txt", "utf8");
+
   state = JSON.parse(state);
   await ig.state.deserializeCookieJar(cookies);
   ig.state.deviceString = state.deviceString;

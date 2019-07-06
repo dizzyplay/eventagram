@@ -35,8 +35,8 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/hash_feed", async (req, res) => {
-  console.log("hash_feed");
   const q = req.query.q;
+  console.log("hash_feed : " + q);
   let result = { data: [], status: "", info: "" };
   try {
     const hashtag = await HashTag.findOneOrFail({ where: { name: q } });
@@ -47,23 +47,27 @@ app.get("/hash_feed", async (req, res) => {
     result.info = "해당 해시 태그는 db에 존재하지 않습니다";
     result.status = "404";
   }
-  console.log(result.data.length);
+  console.log("hash tag length :" + result.data.length);
   res.send({ result });
 });
 
 app.get("/hash_feed_refresh", async (req, res) => {
-  console.log("hash feed refresh");
   let result = { data: null, status: "", info: "" };
   const q = req.query.q;
+  console.log("hash feed refresh: " + q);
   try {
+    await searchTagInfo(q);
     const hashTagRes = await HashTag.findOneOrFail({ where: { name: q } });
     hashTagRes.isProcessing = true;
     result.data = await hashTagRes.save();
     result.status = "ok";
     await HTS.add({ search_term: q });
   } catch (e) {
-    console.log("해당 해시 태그는 db에 존재하지 않습니다");
-    result.info = "해당 해시 태그는 db에 존재하지 않습니다";
+    console.log(
+      "해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다"
+    );
+    result.info =
+      "해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다";
     result.status = "404";
   }
   res.send({ result });

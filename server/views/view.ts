@@ -26,26 +26,26 @@ interface Imedia {
 export async function saveMedia(hashtag: string, media: Imedia) {
   const h = await HashTag.findOneOrFail({ where: { name: hashtag } });
   try {
-    const media_qs = await Media.findOneOrFail({
+    const media_obj = await Media.findOneOrFail({
       where: { mediaId: media.media_id }
     });
-    media_qs.username = media.username;
-    media_qs.mediaId = media.media_id;
-    media_qs.takenAt = new Date(Number(media.taken_at) * 1000);
-    media_qs.likeCount = media.like_count;
-    media_qs.commentCount = media.comment_count;
-    media_qs.caption = media.caption;
-    media_qs.hashtag = h;
-    await media_qs.save();
+    media_obj.username = media.username;
+    media_obj.mediaId = media.media_id;
+    media_obj.takenAt = new Date(Number(media.taken_at) * 1000);
+    media_obj.likeCount = media.like_count;
+    media_obj.commentCount = media.comment_count;
+    media_obj.caption = media.caption;
+    media_obj.hashtag = h;
+    await media_obj.save();
   } catch (e) {
-    const media_qs = new Media();
-    media_qs.username = media.username;
-    media_qs.mediaId = media.media_id;
-    media_qs.takenAt = new Date(Number(media.taken_at) * 1000);
-    media_qs.likeCount = media.like_count;
-    media_qs.commentCount = media.comment_count;
-    media_qs.caption = media.caption;
-    media_qs.hashtag = h;
-    await media_qs.save();
+    const media_obj = new Media();
+    media_obj.username = media.username;
+    media_obj.mediaId = media.media_id;
+    media_obj.takenAt = new Date(Number(media.taken_at) * 1000);
+    media_obj.likeCount = media.like_count;
+    media_obj.commentCount = media.comment_count;
+    media_obj.caption = media.caption;
+    media_obj.hashtag = h;
+    await media_obj.save();
   }
 }
