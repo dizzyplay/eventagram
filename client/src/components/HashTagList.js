@@ -7,7 +7,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import styled from "styled-components";
 import { getHashInfo } from "../api";
 import { useDispatch } from "react-redux";
-import { deleteTagAction } from "../module/hashtags";
+import { deleteTagAction, refreshTag } from "../module/hashtags";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -45,12 +45,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export function HashTag(props) {
+export function HashTagList(props) {
+  const data = props;
   const [loading, setLoading] = useState(false);
-  const [id, setId] = useState();
   const dispatch = useDispatch();
   const dispatchDeleteTag = tagId => dispatch(deleteTagAction(tagId));
-  const [data, setData] = useState({ ...props });
   const classes = useStyles();
 
   const handleRefresh = async e => {
@@ -58,7 +57,7 @@ export function HashTag(props) {
     setLoading(true);
     try {
       const res = await getHashInfo(data.name);
-      setData({ ...res.data.hashTag.data });
+      dispatch(refreshTag(res.data.hashTag));
       setLoading(false);
     } catch (e) {}
   };
@@ -88,7 +87,7 @@ export function HashTag(props) {
                   #{data.name}
                 </Typography>
                 <div className={classes.split}>
-                  <Typography variant={"caption"}>Media </Typography>
+                  <Typography variant={"caption"}>미디어 </Typography>
                   <Typography
                     variant={"h5"}
                     color={"primary"}

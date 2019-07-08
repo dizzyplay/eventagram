@@ -5,7 +5,9 @@ import Paper from "@material-ui/core/Paper";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import IconButton from "@material-ui/core/IconButton";
-import { getHashInfo } from "../api";
+import { useDispatch, useSelector } from "react-redux";
+import { addTagAction } from "../module/hashtags";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -21,6 +23,8 @@ const useStyles = makeStyles(theme => ({
   },
   root: {
     padding: "2px 4px",
+    margin: "0",
+    height: "40px",
     display: "flex",
     alignItems: "center",
     width: 300
@@ -39,20 +43,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 export default () => {
-  const [v, setV] = useState("");
+  const [tag, setTag] = useState("");
+  const { search_pending } = useSelector(state => state.hashtags);
+  const dispatch = useDispatch();
+  const dispatchTagInfo = tag => dispatch(addTagAction(tag));
   const classes = useStyles();
   const handleChange = e => {
-    setV(e.target.value);
-    console.log(e.target.value);
+    setTag(e.target.value);
   };
-  const handleSubmit = async () => {
-    try {
-      const result = await getHashInfo(v);
-      console.log(result.data.hashTag);
-    } catch (e) {
-      console.log(e);
-    }
+  const handleSubmit = () => {
+    dispatchTagInfo(tag);
+    setTag("");
   };
+  console.log(search_pending);
   return (
     <Container>
       <Paper className={classes.root}>
@@ -60,10 +63,15 @@ export default () => {
           className={classes.input}
           placeholder={"여기서 해시태그 검색 "}
           onChange={handleChange}
+          value={tag}
         />
-        <IconButton className={classes.iconButton} onClick={handleSubmit}>
-          <SearchIcon />
-        </IconButton>
+        {search_pending ? (
+          <CircularProgress size={25} />
+        ) : (
+          <IconButton className={classes.iconButton} onClick={handleSubmit}>
+            <SearchIcon />
+          </IconButton>
+        )}
       </Paper>
     </Container>
   );
@@ -71,6 +79,6 @@ export default () => {
 
 const Container = styled.div`
   display: flex;
-  flex-direction: row;
   align-items: center;
+  justify-content: center;
 `;

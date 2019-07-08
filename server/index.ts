@@ -51,7 +51,7 @@ app.get("/hash_feed", async (req, res) => {
 });
 
 app.get("/hash_feed_refresh", async (req, res) => {
-  let result = { data: null, status: "", info: "" };
+  let result = { data: null, info: "" };
   const q = req.query.q;
   console.log("hash feed refresh: " + q);
   try {
@@ -59,7 +59,6 @@ app.get("/hash_feed_refresh", async (req, res) => {
     const hashTagRes = await HashTag.findOneOrFail({ where: { name: q } });
     hashTagRes.isProcessing = true;
     result.data = await hashTagRes.save();
-    result.status = "ok";
     await HTS.add({ search_term: q });
   } catch (e) {
     console.log(
@@ -67,7 +66,6 @@ app.get("/hash_feed_refresh", async (req, res) => {
     );
     result.info =
       "해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다. 혹은 인증부분 확인 바람.";
-    result.status = "404";
   }
   res.send({ result });
 });
@@ -96,7 +94,8 @@ app.post('/delete_tag',async (req,res)=>{
   }catch (e) {
   }
   res.send({result})
-})
+});
+
 // save with file about user cookies and state
 app.post("/auth", async (req, res) => {
   const user_id = req.body.id;

@@ -9,12 +9,14 @@ export async function refreshHashFeed(q, job?) {
     const sub = ts.items$.subscribe(
       feed => {
         feed.map(data => {
+          console.log(data.code)
           arr.push({
             media_id: data.id,
             username: data.user.username,
             taken_at: data.taken_at,
             like_count: data.like_count,
             comment_count: data.comment_count,
+            code:data.code,
             caption:
               data.caption && data.caption.text ? data.caption.text : null
           });

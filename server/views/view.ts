@@ -21,6 +21,7 @@ interface Imedia {
   taken_at: string;
   like_count: number;
   comment_count: number;
+  code: string;
   caption: string;
 }
 export async function saveMedia(hashtag: string, media: Imedia) {
@@ -34,6 +35,7 @@ export async function saveMedia(hashtag: string, media: Imedia) {
     media_obj.takenAt = new Date(Number(media.taken_at) * 1000);
     media_obj.likeCount = media.like_count;
     media_obj.commentCount = media.comment_count;
+    media_obj.code = media.code;
     media_obj.caption = media.caption;
     media_obj.hashtag = h;
     await media_obj.save();
@@ -44,6 +46,7 @@ export async function saveMedia(hashtag: string, media: Imedia) {
     media_obj.takenAt = new Date(Number(media.taken_at) * 1000);
     media_obj.likeCount = media.like_count;
     media_obj.commentCount = media.comment_count;
+    media_obj.code = media.code;
     media_obj.caption = media.caption;
     media_obj.hashtag = h;
     await media_obj.save();

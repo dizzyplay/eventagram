@@ -28,6 +28,9 @@ export class Media extends BaseEntity {
   @Column({ nullable: true })
   caption: string;
 
+  @Column({ nullable: true })
+  code: string;
+
   @Column({})
   takenAt: Date;
 
