@@ -29,6 +29,6 @@ export class HashTag extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(type => Media, media => media.hashtag, { cascade: true })
+  @OneToMany(type => Media, media => media.hashtag)
   medias: Media[];
 }

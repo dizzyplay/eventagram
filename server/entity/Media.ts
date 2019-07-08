@@ -31,6 +31,6 @@ export class Media extends BaseEntity {
   @Column({})
   takenAt: Date;
 
-  @ManyToOne(type => HashTag, hashtag => hashtag.medias)
+  @ManyToOne(type => HashTag, hashtag => hashtag.medias,{onDelete:'CASCADE'})
   hashtag: HashTag;
 }
