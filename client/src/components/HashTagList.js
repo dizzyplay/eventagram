@@ -4,12 +4,15 @@ import { CardContent } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import styled from "styled-components";
 import { getHashInfo } from "../api";
+import { useDispatch } from "react-redux";
+import { deleteTagAction } from "../module/hashtags";
 
 const useStyles = makeStyles(theme => ({
   card: {
     display: "flex",
-    margin: "20px",
+    margin: "10px",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center"
@@ -44,23 +47,32 @@ const useStyles = makeStyles(theme => ({
 
 export function HashTag(props) {
   const [loading, setLoading] = useState(false);
+  const [id, setId] = useState();
+  const dispatch = useDispatch();
+  const dispatchDeleteTag = tagId => dispatch(deleteTagAction(tagId));
   const [data, setData] = useState({ ...props });
   const classes = useStyles();
 
-  const handleRefresh = async () => {
+  const handleRefresh = async e => {
+    e.stopPropagation();
     setLoading(true);
     try {
       const res = await getHashInfo(data.name);
-      setData({ ...res.data.hashTag });
+      setData({ ...res.data.hashTag.data });
       setLoading(false);
     } catch (e) {}
+  };
+
+  const handleDelete = (e, id) => {
+    e.stopPropagation();
+    dispatchDeleteTag(id);
   };
   return (
     <>
       {loading ? (
         <Card className={classes.card}>
           <CardContent className={classes.centered}>
-            <CircularProgress />
+            <CircularProgress size={40} />
           </CardContent>
         </Card>
       ) : (
@@ -84,7 +96,12 @@ export function HashTag(props) {
                   >
                     {data.mediaCount}
                   </Typography>
-                  <button onClick={handleRefresh}>refresh</button>
+                  <Column>
+                    <button onClick={handleRefresh}>refresh</button>
+                    <button onClick={e => handleDelete(e, data.id)}>
+                      delete
+                    </button>
+                  </Column>
                 </div>
               </div>
               <Typography variant={"caption"} color={"textSecondary"}>
@@ -103,3 +120,8 @@ export function HashTag(props) {
     </>
   );
 }
+
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+`;

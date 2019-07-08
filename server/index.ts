@@ -30,25 +30,24 @@ createConnection(connectionOptions)
 
 app.get("/", async (req, res) => {
   console.log("ok");
-  const allTags = await HashTag.find();
+  const allTags = await HashTag.find({order:{id:"DESC"}});
   res.send(allTags);
 });
 
 app.get("/hash_feed", async (req, res) => {
   const q = req.query.q;
   console.log("hash_feed : " + q);
-  let result = { data: [], status: "", info: "" };
+  let result = {tag:null,feed_list: [], info: "" };
   try {
-    const hashtag = await HashTag.findOneOrFail({ where: { name: q } });
-    result.data = await Media.find({ where: { hashtag: hashtag.id } });
-    result.status = "ok";
+    const hashtag = await HashTag.findOneOrFail({ where: { id: q } });
+    result.tag=hashtag;
+    result.feed_list = await Media.find({ where: { hashtag } });
   } catch (e) {
     console.log("해당 해시 태그는 db에 존재하지 않습니다");
     result.info = "해당 해시 태그는 db에 존재하지 않습니다";
-    result.status = "404";
   }
-  console.log("hash tag length :" + result.data.length);
-  res.send({ result });
+  console.log("hash tag length :" + result.feed_list.length);
+  res.send( result );
 });
 
 app.get("/hash_feed_refresh", async (req, res) => {
@@ -77,7 +76,7 @@ app.get("/search_tag", async (req, res) => {
   const q = req.query.q;
   console.log("search hash tag: " + q);
   const result = await searchTagInfo(q);
-  let hashTag = {};
+  let hashTag = null
   if (result) {
     const hash = {
       name: result.name,
@@ -88,14 +87,13 @@ app.get("/search_tag", async (req, res) => {
   res.send({ hashTag });
 });
 
-app.delete('/delete_tag',async (req,res)=>{
+app.post('/delete_tag',async (req,res)=>{
   const id= req.body.id;
-  let result={data:null,status:200}
+  let result=null;
   try{
-    const tag=await HashTag.findOneOrFail({where:{id}})
-    result.data = await HashTag.remove(tag)
+    const tag=await HashTag.findOne({where:{id}})
+     result = await HashTag.remove(tag)
   }catch (e) {
-    result.status=404
   }
   res.send({result})
 })
