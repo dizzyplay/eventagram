@@ -1,8 +1,9 @@
 import React from "react";
 import { Container } from "./container";
 
-const Detail = () => {
-  return <Container />;
+const Detail = props => {
+  const { hashTagList } = props;
+  return <Container hashTagList={hashTagList} />;
 };
 
 export default Detail;

@@ -55,7 +55,6 @@ export default () => {
     dispatchTagInfo(tag);
     setTag("");
   };
-  console.log(search_pending);
   return (
     <Container>
       <Paper className={classes.root}>
