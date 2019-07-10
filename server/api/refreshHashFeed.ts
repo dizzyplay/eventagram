@@ -9,7 +9,6 @@ export async function refreshHashFeed(q, job?) {
     const sub = ts.items$.subscribe(
       feed => {
         feed.map(data => {
-          console.log(data.code)
           arr.push({
             media_id: data.id,
             username: data.user.username,
@@ -21,8 +20,8 @@ export async function refreshHashFeed(q, job?) {
               data.caption && data.caption.text ? data.caption.text : null
           });
         });
-        console.log("length : " + feed.length);
-        if (arr.length > 100) {
+        console.log("[리프레시 처리중] 해시태그피드 배열길이 : " + feed.length);
+        if (arr.length > 30) {
           sub.unsubscribe();
           resolve(arr);
         }

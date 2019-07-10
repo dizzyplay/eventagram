@@ -1,6 +1,6 @@
 import { HashTag } from "../entity/HashTag";
 import { refreshHashFeed } from "../api/refreshHashFeed";
-import { saveMedia } from "../views/view";
+import { saveMedia } from "../views/dbTask";
 
 const Bull = require("bull");
 

@@ -5,7 +5,7 @@ import { createConnection } from "typeorm";
 import connectionOptions from "./ormconfig";
 import { searchTagInfo } from "./api/searchTagInfo";
 import HTS from "./tasks/hashQueue";
-import { saveHashTag } from "./views/view";
+import { saveHashTag } from "./views/dbTask";
 import { HashTag } from "./entity/HashTag";
 import { Media } from "entity/Media";
 
@@ -36,17 +36,17 @@ app.get("/", async (req, res) => {
 
 app.get("/hash_feed", async (req, res) => {
   const q = req.query.q;
-  console.log("hash_feed : " + q);
+  console.log("[서버] :hash feed GET 쿼리로받은 인자 " + q);
   let result = {tag:null,feed_list: [], info: "" };
   try {
     const hashtag = await HashTag.findOneOrFail({ where: { id: q } });
     result.tag=hashtag;
-    result.feed_list = await Media.find({ where: { hashtag } });
+    result.feed_list = await Media.find({ where: { hashtag },order:{id:"DESC"} });
   } catch (e) {
     console.log("해당 해시 태그는 db에 존재하지 않습니다");
     result.info = "해당 해시 태그는 db에 존재하지 않습니다";
   }
-  console.log("hash tag length :" + result.feed_list.length);
+  console.log("[서버]db에 저장되어있는 해시피드 배열길이 :" + result.feed_list.length);
   res.send( result );
 });
 
@@ -115,7 +115,6 @@ io.on("connection", async socket => {
     console.log(data);
   });
   await HTS.on("progress", (job, progress) => {
-    console.log(progress + "% 진행중입니다 ");
     socket.emit("progress", progress);
   });
   await HTS.on("completed", () => {

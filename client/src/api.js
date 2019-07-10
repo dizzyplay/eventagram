@@ -21,3 +21,7 @@ export function fetchTagInfo(tag_q) {
 export function deleteTagFetch(tag_q) {
   return axios.post(base_url + "/delete_tag", { id: tag_q });
 }
+
+export function refreshHashFeedApi(tag_name) {
+  return axios.get(base_url + "/hash_feed_refresh?q=" + tag_name);
+}

@@ -4,19 +4,32 @@ import HashTagSearch from "./HashTagSearch";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { addTagListAction } from "../module/hashtags";
-import { getFeedAction } from "../module/selectedFeed";
+import { getFeedAction, setServerAction } from "../module/selectedFeed";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Detail from "./Detail";
+import DetailNav from "./DetailNav";
+import socketIOClient from "socket.io-client";
 
 function App() {
+  const url = "ws://10.0.1.13:8000";
   const { hash_tag_list, pending } = useSelector(state => state.hashtags);
   const dispatch = useDispatch();
   const dispatchTagList = () => dispatch(addTagListAction());
   const dispatchGetFeed = id => dispatch(getFeedAction(id));
+  const dispatchServer = server => dispatch(setServerAction(server));
   useEffect(() => {
     dispatchTagList();
     //eslint-disable-next-line
-  }, []);
+    const socket = socketIOClient(url);
+    socket.on("completed", () => {
+      console.log("completed");
+      dispatchServer("completed");
+    });
+    socket.on("progress", () => {
+      console.log("progress");
+      dispatchServer("progress");
+    });
+  }, [url]);
   const fetchFeed = id => {
     dispatchGetFeed(id);
   };
@@ -47,7 +60,8 @@ function App() {
             </>
           </FixedSeparatedContainer>
           <SeparatedContainer>
-            <Detail hashTagList={hash_tag_list} />
+            <DetailNav />
+            <Detail />
           </SeparatedContainer>
         </AppContainer>
       )}
@@ -81,6 +95,8 @@ const SeparatedContainer = styled.div`
 `;
 
 const FixedSeparatedContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   position: fixed;
   top: 40px;
   left: 10px;

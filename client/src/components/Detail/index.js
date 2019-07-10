@@ -2,8 +2,7 @@ import React from "react";
 import { Container } from "./container";
 
 const Detail = props => {
-  const { hashTagList } = props;
-  return <Container hashTagList={hashTagList} />;
+  return <Container />;
 };
 
 export default Detail;
