@@ -4,11 +4,12 @@ import {
   SET_CURRENT_FEED,
   FEED_PENDING,
   SET_SERVER_STATE,
-  REFRESH_HASH_FEED
+  REFRESH_HASH_FEED,
+  DELETE_CURRENT_FEED
 } from "../actions";
 
 const initialState = {
-  feed: [],
+  cachedFeed: [],
   pending: false,
   selected_feed: { tag: null, list: [] },
   server: "",
@@ -22,11 +23,15 @@ const selectedFeed = (state = initialState, { type, payload }) => {
       return {
         ...state,
         pending: false,
-        feed: [
-          ...state.feed.filter(feed => feed.tag.name !== payload.tag.name),
+        cachedFeed: [
+          ...state.cachedFeed.filter(
+            feed => feed.tag.name !== payload.tag.name
+          ),
           payload
         ]
       };
+    case DELETE_CURRENT_FEED:
+      return applyDeleteCurrentFeed(state, payload);
     case SET_CURRENT_FEED:
       return {
         ...state,
@@ -54,16 +59,32 @@ const selectedFeed = (state = initialState, { type, payload }) => {
 };
 
 const addFeedList = feedList => ({ type: ADD_FEED_LIST, payload: feedList });
-const setCurrentFeed = feed => ({ type: SET_CURRENT_FEED, payload: feed });
+const setCurrentFeed = feed => ({
+  type: SET_CURRENT_FEED,
+  payload: feed
+});
 const setPending = () => ({ type: FEED_PENDING });
 const setServer = server => ({ type: SET_SERVER_STATE, payload: server });
 const refreshHashFeed = () => ({ type: REFRESH_HASH_FEED });
+export const deleteCurrentFeed = () => ({ type: DELETE_CURRENT_FEED });
+
+const applyDeleteCurrentFeed = (state, payload) => {
+  return {
+    ...state,
+    selected_feed: { tag: null, list: [] }
+  };
+};
 
 export const refreshHashFeedAction = name => dispatch => {
   dispatch(setPending());
   return refreshHashFeedApi(name).then(data => {
     dispatch(refreshHashFeed());
   });
+};
+
+export const setCurrentFeedAction = feed => dispatch => {
+  dispatch(setPending());
+  dispatch(setCurrentFeed(feed));
 };
 
 export const getFeedAction = tagId => dispatch => {
@@ -73,7 +94,6 @@ export const getFeedAction = tagId => dispatch => {
     Feed.tag = data.data.tag;
     Feed.list = data.data.feed_list;
     dispatch(addFeedList(Feed));
-    console.log(Feed.tag.id);
     dispatch(setCurrentFeed(Feed));
   });
 };

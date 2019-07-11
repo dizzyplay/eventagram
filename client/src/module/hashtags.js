@@ -6,17 +6,21 @@ import {
   SEARCH_PENDING,
   REFRESH_TAG,
   DELETE_TAG,
+  ADD_TAG_CHECKED_LIST,
   OK
 } from "../actions";
 
 const initialState = {
   search_pending: false,
   hash_tag_list: [],
-  pending: false
+  pending: false,
+  checkedTagList: []
 };
 
 const hashtags = (state = initialState, { type, payload }) => {
   switch (type) {
+    case ADD_TAG_CHECKED_LIST:
+      return applyAddCheckedTagList(state, payload);
     case ADD_TAG_LIST:
       return {
         ...state,
@@ -54,7 +58,10 @@ const hashtags = (state = initialState, { type, payload }) => {
     case DELETE_TAG:
       return {
         ...state,
-        hash_tag_list: state.hash_tag_list.filter(tag => tag.id !== payload)
+        hash_tag_list: state.hash_tag_list.filter(tag => tag.id !== payload),
+        checkedTagList: [
+          ...state.checkedTagList.filter(tag => tag.id !== payload)
+        ]
       };
     case OK:
       return {
@@ -76,6 +83,23 @@ const deleteTag = tagId => ({ type: DELETE_TAG, payload: tagId });
 const setSearchPending = () => ({ type: SEARCH_PENDING });
 const setOk = () => ({ type: OK });
 export const refreshTag = tag => ({ type: REFRESH_TAG, payload: tag });
+export const addCheckedTagList = tag => ({
+  type: ADD_TAG_CHECKED_LIST,
+  payload: tag
+});
+
+const applyAddCheckedTagList = (state, payload) => {
+  let temp = null;
+  if (state.checkedTagList.filter(tag => tag.id === payload.id).length !== 0) {
+    temp = [...state.checkedTagList.filter(tag => tag.id !== payload.id)];
+  } else {
+    temp = [...state.checkedTagList, payload];
+  }
+  return {
+    ...state,
+    checkedTagList: temp
+  };
+};
 
 //actions
 export const deleteTagAction = tagId => dispatch => {

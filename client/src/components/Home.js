@@ -9,6 +9,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Detail from "./Detail";
 import DetailNav from "./DetailNav";
 import socketIOClient from "socket.io-client";
+import CheckedTagList from "./CheckedTagList";
 
 function App() {
   const url = "ws://10.0.1.13:8000";
@@ -24,13 +25,17 @@ function App() {
     socket.on("completed", () => {
       console.log("completed");
       dispatchServer("completed");
+      setTimeout(() => {
+        dispatchServer("");
+      }, 2000);
     });
     socket.on("progress", () => {
       console.log("progress");
       dispatchServer("progress");
     });
+    //eslint-disable-next-line
   }, [url]);
-  const fetchFeed = id => {
+  const getOrFetchFeed = id => {
     dispatchGetFeed(id);
   };
   return (
@@ -44,7 +49,7 @@ function App() {
               <HashTagSearch />
               <div>
                 {hash_tag_list.map(tag => (
-                  <Link key={tag.id} onClick={() => fetchFeed(tag.id)}>
+                  <Link key={tag.id} onClick={() => getOrFetchFeed(tag.id)}>
                     {tag.id}
                     <HashTagList
                       id={tag.id}
@@ -60,6 +65,7 @@ function App() {
             </>
           </FixedSeparatedContainer>
           <SeparatedContainer>
+            <CheckedTagList />
             <DetailNav />
             <Detail />
           </SeparatedContainer>
@@ -90,7 +96,7 @@ const SeparatedContainer = styled.div`
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 10px;
+  top: 0;
   left: 400px;
 `;
 

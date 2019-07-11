@@ -4,10 +4,12 @@ import { Tooltip, Button, makeStyles } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import FavoriteBorder from "@material-ui/icons/Favorite";
 import ChatBubble from "@material-ui/icons/ChatBubble";
+import * as moment from "moment";
+import "moment/locale/ko";
 
 export function Presenter(props) {
   const { selected_feed, loading } = props;
-  const useStyles = makeStyles(theme => ({
+  const useStyles = makeStyles(() => ({
     root: {},
     icon: {
       margin: "3px"
@@ -37,21 +39,27 @@ export function Presenter(props) {
                   <FavoriteBorder
                     className={classes.icon}
                     color={"secondary"}
-                    style={{ fontSize: 13 }}
+                    style={{ fontSize: 10 }}
                   />
                   {feed.likeCount}
+                  {/*{feed.takenAt}*/}
                   <ChatBubble
                     className={classes.icon}
                     color={"action"}
-                    style={{ fontSize: 14 }}
+                    style={{ fontSize: 11 }}
                   />
                   {feed.commentCount}
                 </Row>
+                <Small>{moment(feed.takenAt).calendar()}</Small>
               </Column>
             </Button>
           </Tooltip>
         ))
       )}
+      {!loading &&
+        selected_feed.tag &&
+        selected_feed.list.length === 0 &&
+        "No Data"}
     </Main>
   );
 }

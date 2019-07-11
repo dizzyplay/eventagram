@@ -6,8 +6,9 @@ import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import styled from "styled-components";
 import { getHashInfo } from "../api";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteTagAction, refreshTag } from "../module/hashtags";
+import { deleteCurrentFeed } from "../module/selectedFeed";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -48,8 +49,10 @@ const useStyles = makeStyles(theme => ({
 export function HashTagList(props) {
   const data = props;
   const [loading, setLoading] = useState(false);
+  const { selected_feed } = useSelector(state => state.selectedFeed);
   const dispatch = useDispatch();
   const dispatchDeleteTag = tagId => dispatch(deleteTagAction(tagId));
+  const dispatchDeleteCurrentFeed = () => dispatch(deleteCurrentFeed());
   const classes = useStyles();
 
   const handleRefresh = async e => {
@@ -65,6 +68,9 @@ export function HashTagList(props) {
   const handleDelete = (e, id) => {
     e.stopPropagation();
     dispatchDeleteTag(id);
+    if (selected_feed.tag.id === id) {
+      dispatchDeleteCurrentFeed();
+    }
   };
   return (
     <>
