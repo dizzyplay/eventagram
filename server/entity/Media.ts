@@ -3,7 +3,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  CreateDateColumn,
   ManyToOne
 } from "typeorm";
 import { HashTag } from "./HashTag";

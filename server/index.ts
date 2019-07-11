@@ -41,7 +41,7 @@ app.get("/hash_feed", async (req, res) => {
   try {
     const hashtag = await HashTag.findOneOrFail({ where: { id: q } });
     result.tag=hashtag;
-    result.feed_list = await Media.find({ where: { hashtag },order:{id:"DESC"} });
+    result.feed_list = await Media.find({ where: { hashtag },order:{takenAt:"DESC"} });
   } catch (e) {
     console.log("해당 해시 태그는 db에 존재하지 않습니다");
     result.info = "해당 해시 태그는 db에 존재하지 않습니다";
