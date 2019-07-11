@@ -12,7 +12,7 @@ import { Media } from "entity/Media";
 const app = require("express")();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
-
+process.setMaxListeners(15);
 app.use((req, res, next) => {
   res.append("Access-Control-Allow-Origin", ["*"]);
   res.append("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
