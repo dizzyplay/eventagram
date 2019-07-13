@@ -21,7 +21,7 @@ export async function refreshHashFeed(q, job?) {
           });
         });
         console.log("[리프레시 처리중] 해시태그피드 배열길이 : " + feed.length);
-        if (arr.length > 200) {
+        if (arr.length > 500) {
           sub.unsubscribe();
           resolve(arr);
         }

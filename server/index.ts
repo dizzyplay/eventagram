@@ -57,9 +57,10 @@ app.get("/hash_feed_refresh", async (req, res) => {
   try {
     await searchTagInfo(q);
     const hashTagRes = await HashTag.findOneOrFail({ where: { name: q } });
+    await Media.delete({hashtag:hashTagRes})
     hashTagRes.isProcessing = true;
     result.data = await hashTagRes.save();
-    await HTS.add({ search_term: q });
+    await HTS.add({ search_term: q, hash_tag_id:hashTagRes.id });
   } catch (e) {
     console.log(
       "해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다. 혹은 인증부분 확인 바람."
@@ -117,7 +118,7 @@ io.on("connection", async socket => {
   await HTS.on("progress", (job, progress) => {
     socket.emit("progress", progress);
   });
-  await HTS.on("completed", () => {
-    socket.emit("completed", 100);
+  await HTS.on("completed", (job,result) => {
+    socket.emit("completed", {job,result});
   });
 });

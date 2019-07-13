@@ -1,6 +1,6 @@
 import { HashTag } from "../entity/HashTag";
 import { refreshHashFeed } from "../api/refreshHashFeed";
-import { saveMedia } from "../views/dbTask";
+import {saveMedia} from "../views/dbTask";
 
 const Bull = require("bull");
 
@@ -21,7 +21,8 @@ tagSearchQueue.on("completed", async (job, result) => {
     where: { name: result.search_term }
   });
   result.data.map(async v => {
-    await saveMedia(hashTag.name, v);
+    await saveMedia(hashTag.name,v)
+    // await saveMedia(hashTag.name, v);
   });
   hashTag.isProcessing = false;
   await hashTag.save();
