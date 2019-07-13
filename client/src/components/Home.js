@@ -27,7 +27,6 @@ function App() {
     dispatchAddTagList();
     //eslint-disable-next-line
     socket.on("completed", data => {
-      console.log(data);
       console.log("completed");
       dispatchServer("completed");
       setTimeout(() => {
