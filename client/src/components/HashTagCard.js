@@ -1,24 +1,24 @@
 import React, { useState } from "react";
 import Card from "@material-ui/core/Card";
-import { CardContent } from "@material-ui/core";
+import CardContent from "@material-ui/core/CardContent";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import styled from "styled-components";
 import { getHashInfo } from "../api";
 import { useDispatch, useSelector } from "react-redux";
+import { deleteTagAction, refreshTag } from "../module/hashtags";
 import {
-  addCheckedTagList,
-  deleteTagAction,
-  refreshTag
-} from "../module/hashtags";
-import { deleteCurrentFeed } from "../module/selectedFeed";
+  deleteCurrentFeed,
+  getFeedAndAddTagAction
+} from "../module/selectedFeed";
 import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles(theme => ({
   card: {
     display: "flex",
-    margin: "10px",
+    margin: "3px",
+    padding: "0",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center"
@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export function HashTagList(props) {
+export function HashTagCard(props) {
   const hashtag = props;
   const [loading, setLoading] = useState(false);
   const { selected_feed } = useSelector(state => state.selectedFeed);
@@ -59,6 +59,7 @@ export function HashTagList(props) {
   const dispatch = useDispatch();
   const dispatchDeleteTag = tagId => dispatch(deleteTagAction(tagId));
   const dispatchDeleteCurrentFeed = () => dispatch(deleteCurrentFeed());
+  const dispatchGetFeed = tagId => dispatch(getFeedAndAddTagAction(tagId));
   const classes = useStyles();
 
   const handleRefresh = async e => {
@@ -70,7 +71,6 @@ export function HashTagList(props) {
       setLoading(false);
     } catch (e) {}
   };
-
   const handleDelete = (e, id) => {
     e.stopPropagation();
     dispatchDeleteTag(id);
@@ -78,8 +78,8 @@ export function HashTagList(props) {
       dispatchDeleteCurrentFeed();
     }
   };
-  const handleCheck = tag => {
-    dispatch(addCheckedTagList(tag));
+  const handleCheck = () => {
+    dispatchGetFeed(hashtag.id);
   };
   return (
     <>
@@ -106,7 +106,10 @@ export function HashTagList(props) {
                     checkedTagList.filter(tag => tag.id === hashtag.id)
                       .length !== 0
                   }
-                  onChange={() => handleCheck(selected_feed.tag)}
+                  onChange={handleCheck}
+                  onClick={e => {
+                    e.stopPropagation();
+                  }}
                 />
                 <div className={classes.split}>
                   <Typography variant={"caption"}>미디어 </Typography>
@@ -130,9 +133,13 @@ export function HashTagList(props) {
               </Typography>
             </CardContent>
             <div className={classes.controls}>
-              <CardContent>
-                <Typography>생성날짜: {hashtag.createdAt}</Typography>
-                <Typography>마지막 갱신 날짜 : {hashtag.updatedAt}</Typography>
+              <CardContent style={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant={"caption"}>
+                  생성날짜: {hashtag.createdAt}
+                </Typography>
+                <Typography variant={"caption"}>
+                  마지막 갱신 날짜 : {hashtag.updatedAt}
+                </Typography>
               </CardContent>
             </div>
           </div>

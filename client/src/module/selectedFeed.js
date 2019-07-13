@@ -7,6 +7,7 @@ import {
   REFRESH_HASH_FEED,
   DELETE_CURRENT_FEED
 } from "../actions";
+import { addCheckedTagList } from "./hashtags";
 
 const initialState = {
   cachedFeed: [],
@@ -95,6 +96,18 @@ export const getFeedAction = tagId => dispatch => {
     Feed.list = data.data.feed_list;
     dispatch(addFeedList(Feed));
     dispatch(setCurrentFeed(Feed));
+  });
+};
+
+export const getFeedAndAddTagAction = tagId => dispatch => {
+  dispatch(setPending());
+  return fetchFeed(tagId).then(data => {
+    let Feed = {};
+    Feed.tag = data.data.tag;
+    Feed.list = data.data.feed_list;
+    dispatch(addFeedList(Feed));
+    dispatch(setCurrentFeed(Feed));
+    dispatch(addCheckedTagList(Feed.tag));
   });
 };
 

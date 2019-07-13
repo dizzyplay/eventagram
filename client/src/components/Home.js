@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { HashTagList } from "./HashTagList";
+import { HashTagCard } from "./HashTagCard";
 import HashTagSearch from "./HashTagSearch";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,25 +8,31 @@ import { getFeedAction, setServerAction } from "../module/selectedFeed";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Detail from "./Detail";
 import DetailNav from "./DetailNav";
-import socketIOClient from "socket.io-client";
+import CheckedTagNav from "./CheckedTagNav";
 import CheckedTagList from "./CheckedTagList";
+import socketIOClient from "socket.io-client";
+
+const url = "ws://10.0.1.13:8000";
+const socket = socketIOClient(url);
 
 function App() {
-  const url = "ws://10.0.1.13:8000";
-  const { hash_tag_list, pending } = useSelector(state => state.hashtags);
+  const { hash_tag_list, pending, checkedTagList } = useSelector(
+    state => state.hashtags
+  );
   const dispatch = useDispatch();
-  const dispatchTagList = () => dispatch(addTagListAction());
+  const dispatchAddTagList = () => dispatch(addTagListAction());
   const dispatchGetFeed = id => dispatch(getFeedAction(id));
   const dispatchServer = server => dispatch(setServerAction(server));
   useEffect(() => {
-    dispatchTagList();
+    dispatchAddTagList();
     //eslint-disable-next-line
-    const socket = socketIOClient(url);
-    socket.on("completed", () => {
+    socket.on("completed", data => {
+      console.log(data);
       console.log("completed");
       dispatchServer("completed");
       setTimeout(() => {
         dispatchServer("");
+        dispatchGetFeed(data.job.data.hash_tag_id);
       }, 2000);
     });
     socket.on("progress", () => {
@@ -34,7 +40,7 @@ function App() {
       dispatchServer("progress");
     });
     //eslint-disable-next-line
-  }, [url]);
+  }, []);
   const getOrFetchFeed = id => {
     dispatchGetFeed(id);
   };
@@ -51,7 +57,7 @@ function App() {
                 {hash_tag_list.map(tag => (
                   <Link key={tag.id} onClick={() => getOrFetchFeed(tag.id)}>
                     {tag.id}
-                    <HashTagList
+                    <HashTagCard
                       id={tag.id}
                       name={tag.name}
                       mediaCount={tag.mediaCount}
@@ -65,9 +71,15 @@ function App() {
             </>
           </FixedSeparatedContainer>
           <SeparatedContainer>
-            <CheckedTagList />
-            <DetailNav />
-            <Detail />
+            <CheckedTagNav />
+            {checkedTagList.length > 0 ? (
+              <CheckedTagList />
+            ) : (
+              <>
+                <DetailNav />
+                <Detail />
+              </>
+            )}
           </SeparatedContainer>
         </AppContainer>
       )}
