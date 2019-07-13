@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function Presenter(props) {
-  const { selectedFeed, server, handleRefresh } = props;
+  const { selectedFeed, server, handleRefresh, isBackendWorking } = props;
   const classes = useStyles();
 
   return (
@@ -36,17 +36,21 @@ export function Presenter(props) {
           </Column>
         )}
         {selectedFeed.tag &&
+          !isBackendWorking.status &&
           server !== "progress" &&
           server !== "completed" && (
-            <DataFetchButton fn={() => handleRefresh(selectedFeed.tag.name)} />
+            <DataFetchButton fn={() => handleRefresh(selectedFeed.tag)} />
           )}
         <Column>
-          {server === "progress" && (
+          {server === "progress" ||
+          (server === "" && isBackendWorking.status) ? (
             <Blink>
               <Typography variant={"caption"} display={"block"} gutterBottom>
                 서버에서 데이터를 수집중입니다.
               </Typography>
             </Blink>
+          ) : (
+            ""
           )}
           {server === "completed" && (
             <CustomColumn>

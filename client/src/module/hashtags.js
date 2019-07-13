@@ -7,6 +7,7 @@ import {
   REFRESH_TAG,
   DELETE_TAG,
   ADD_TAG_CHECKED_LIST,
+  SET_BACKEND_WORK,
   OK
 } from "../actions";
 
@@ -14,7 +15,8 @@ const initialState = {
   search_pending: false,
   hash_tag_list: [],
   pending: false,
-  checkedTagList: []
+  checkedTagList: [],
+  isBackendWorking: { status: false, tag_id: null }
 };
 
 const hashtags = (state = initialState, { type, payload }) => {
@@ -63,6 +65,11 @@ const hashtags = (state = initialState, { type, payload }) => {
           ...state.checkedTagList.filter(tag => tag.id !== payload)
         ]
       };
+    case SET_BACKEND_WORK:
+      return {
+        ...state,
+        isBackendWorking: payload
+      };
     case OK:
       return {
         ...state,
@@ -82,6 +89,10 @@ const addTagList = tagList => ({
 const deleteTag = tagId => ({ type: DELETE_TAG, payload: tagId });
 const setSearchPending = () => ({ type: SEARCH_PENDING });
 const setOk = () => ({ type: OK });
+export const setBackendWorking = flag => ({
+  type: SET_BACKEND_WORK,
+  payload: flag
+});
 export const refreshTag = tag => ({ type: REFRESH_TAG, payload: tag });
 export const addCheckedTagList = tag => ({
   type: ADD_TAG_CHECKED_LIST,
@@ -124,6 +135,13 @@ export const addTagListAction = () => dispatch => {
   dispatch({ type: HASH_LIST_PENDING });
   return fetchMainData().then(data => {
     dispatch(addTagList(data.data));
+    if (data.data.filter(tag => tag.isProcessing === true).length !== 0)
+      dispatch(
+        setBackendWorking({
+          status: true,
+          tag_id: data.data.filter(tag => tag.isProcessing === true)[0].id
+        })
+      );
   });
 };
 

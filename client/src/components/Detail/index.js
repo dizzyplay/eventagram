@@ -1,7 +1,7 @@
 import React from "react";
 import { Container } from "./container";
 
-const Detail = props => {
+const Detail = () => {
   return <Container />;
 };
 

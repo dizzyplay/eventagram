@@ -7,7 +7,7 @@ import {
   REFRESH_HASH_FEED,
   DELETE_CURRENT_FEED
 } from "../actions";
-import { addCheckedTagList } from "./hashtags";
+import { addCheckedTagList, setBackendWorking } from "./hashtags";
 
 const initialState = {
   cachedFeed: [],
@@ -90,6 +90,7 @@ export const setCurrentFeedAction = feed => dispatch => {
 
 export const getFeedAction = tagId => dispatch => {
   dispatch(setPending());
+  // dispatch(setBackendWorking({ status: true, tag_id: tagId }));
   return fetchFeed(tagId).then(data => {
     let Feed = {};
     Feed.tag = data.data.tag;

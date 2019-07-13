@@ -3,7 +3,7 @@ import { HashTagCard } from "./HashTagCard";
 import HashTagSearch from "./HashTagSearch";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { addTagListAction } from "../module/hashtags";
+import { addTagListAction, setBackendWorking } from "../module/hashtags";
 import { getFeedAction, setServerAction } from "../module/selectedFeed";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Detail from "./Detail";
@@ -33,6 +33,7 @@ function App() {
       setTimeout(() => {
         dispatchServer("");
         dispatchGetFeed(data.job.data.hash_tag_id);
+        dispatch(setBackendWorking({ status: false, tag_id: null }));
       }, 2000);
     });
     socket.on("progress", () => {
@@ -53,21 +54,18 @@ function App() {
           <FixedSeparatedContainer>
             <>
               <HashTagSearch />
-              <div>
-                {hash_tag_list.map(tag => (
-                  <Link key={tag.id} onClick={() => getOrFetchFeed(tag.id)}>
-                    {tag.id}
-                    <HashTagCard
-                      id={tag.id}
-                      name={tag.name}
-                      mediaCount={tag.mediaCount}
-                      createdAt={tag.createdAt}
-                      updatedAt={tag.updatedAt}
-                      isProsessing={tag.isProcessing}
-                    />
-                  </Link>
-                ))}
-              </div>
+              {hash_tag_list.map(tag => (
+                <Link key={tag.id} onClick={() => getOrFetchFeed(tag.id)}>
+                  <HashTagCard
+                    id={tag.id}
+                    name={tag.name}
+                    mediaCount={tag.mediaCount}
+                    createdAt={tag.createdAt}
+                    updatedAt={tag.updatedAt}
+                    isProcessing={tag.isProcessing}
+                  />
+                </Link>
+              ))}
             </>
           </FixedSeparatedContainer>
           <SeparatedContainer>

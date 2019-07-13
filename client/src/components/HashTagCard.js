@@ -13,8 +13,15 @@ import {
   getFeedAndAddTagAction
 } from "../module/selectedFeed";
 import Checkbox from "@material-ui/core/Checkbox";
+import { Row } from "../styles";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import * as moment from "moment";
+import "moment/locale/ko";
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1
+  },
   card: {
     display: "flex",
     margin: "3px",
@@ -24,7 +31,9 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center"
   },
   content: {
-    flex: "1 0 auto"
+    flex: "1 0 auto",
+    padding: "0",
+    width: "360px"
   },
   details: {
     display: "flex",
@@ -40,7 +49,8 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
+    marginLeft: "10px"
   },
   centered: {
     display: "flex",
@@ -55,7 +65,9 @@ export function HashTagCard(props) {
   const hashtag = props;
   const [loading, setLoading] = useState(false);
   const { selected_feed } = useSelector(state => state.selectedFeed);
-  const { checkedTagList } = useSelector(state => state.hashtags);
+  const { checkedTagList, isBackendWorking } = useSelector(
+    state => state.hashtags
+  );
   const dispatch = useDispatch();
   const dispatchDeleteTag = tagId => dispatch(deleteTagAction(tagId));
   const dispatchDeleteCurrentFeed = () => dispatch(deleteCurrentFeed());
@@ -129,16 +141,38 @@ export function HashTagCard(props) {
                 </div>
               </div>
               <Typography variant={"caption"} color={"textSecondary"}>
-                {hashtag.isProcessing ? "ok" : "not active"}
+                {hashtag.id === isBackendWorking.tag_id &&
+                isBackendWorking.status ? (
+                  <Row style={{ margin: "10px" }}>
+                    해당태그 상태
+                    <div
+                      className={classes.root}
+                      style={{ marginLeft: "20px" }}
+                    >
+                      <LinearProgress color="secondary" variant="query" />
+                    </div>
+                  </Row>
+                ) : (
+                  ""
+                )}
               </Typography>
             </CardContent>
             <div className={classes.controls}>
-              <CardContent style={{ display: "flex", flexDirection: "column" }}>
+              <CardContent
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  margin: "0",
+                  paddingLeft: "10px",
+                  paddingBottom: "5px",
+                  paddingTop: "1px"
+                }}
+              >
                 <Typography variant={"caption"}>
-                  생성날짜: {hashtag.createdAt}
+                  태그생성날짜:{moment(hashtag.createdAt).calendar()}
                 </Typography>
                 <Typography variant={"caption"}>
-                  마지막 갱신 날짜 : {hashtag.updatedAt}
+                  마지막 갱신 날짜: {moment(hashtag.updatedAt).calendar()}
                 </Typography>
               </CardContent>
             </div>
