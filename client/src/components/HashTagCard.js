@@ -7,8 +7,13 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import styled from "styled-components";
 import { getHashInfo } from "../api";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTagAction, refreshTag } from "../module/hashtags";
+import {
+  addCheckedTagList,
+  deleteTagAction,
+  refreshTag
+} from "../module/hashtags";
 import { deleteCurrentFeed } from "../module/selectedFeed";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -47,9 +52,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function HashTagList(props) {
-  const data = props;
+  const hashtag = props;
   const [loading, setLoading] = useState(false);
   const { selected_feed } = useSelector(state => state.selectedFeed);
+  const { checkedTagList } = useSelector(state => state.hashtags);
   const dispatch = useDispatch();
   const dispatchDeleteTag = tagId => dispatch(deleteTagAction(tagId));
   const dispatchDeleteCurrentFeed = () => dispatch(deleteCurrentFeed());
@@ -59,7 +65,7 @@ export function HashTagList(props) {
     e.stopPropagation();
     setLoading(true);
     try {
-      const res = await getHashInfo(data.name);
+      const res = await getHashInfo(hashtag.name);
       dispatch(refreshTag(res.data.hashTag));
       setLoading(false);
     } catch (e) {}
@@ -71,6 +77,9 @@ export function HashTagList(props) {
     if (selected_feed.tag.id === id) {
       dispatchDeleteCurrentFeed();
     }
+  };
+  const handleCheck = tag => {
+    dispatch(addCheckedTagList(tag));
   };
   return (
     <>
@@ -87,11 +96,18 @@ export function HashTagList(props) {
               <div className={classes.split}>
                 <Typography
                   component={"h5"}
-                  variant={"h5"}
+                  variant={"h6"}
                   className={classes.split}
                 >
-                  #{data.name}
+                  #{hashtag.name}
                 </Typography>
+                <Checkbox
+                  checked={
+                    checkedTagList.filter(tag => tag.id === hashtag.id)
+                      .length !== 0
+                  }
+                  onChange={() => handleCheck(selected_feed.tag)}
+                />
                 <div className={classes.split}>
                   <Typography variant={"caption"}>미디어 </Typography>
                   <Typography
@@ -99,24 +115,24 @@ export function HashTagList(props) {
                     color={"primary"}
                     style={{ padding: "10px" }}
                   >
-                    {data.mediaCount}
+                    {hashtag.mediaCount}
                   </Typography>
                   <Column>
                     <button onClick={handleRefresh}>refresh</button>
-                    <button onClick={e => handleDelete(e, data.id)}>
+                    <button onClick={e => handleDelete(e, hashtag.id)}>
                       delete
                     </button>
                   </Column>
                 </div>
               </div>
               <Typography variant={"caption"} color={"textSecondary"}>
-                {data.isProcessing ? "ok" : "not active"}
+                {hashtag.isProcessing ? "ok" : "not active"}
               </Typography>
             </CardContent>
             <div className={classes.controls}>
               <CardContent>
-                <Typography>생성날짜: {data.createdAt}</Typography>
-                <Typography>마지막 갱신 날짜 : {data.updatedAt}</Typography>
+                <Typography>생성날짜: {hashtag.createdAt}</Typography>
+                <Typography>마지막 갱신 날짜 : {hashtag.updatedAt}</Typography>
               </CardContent>
             </div>
           </div>
