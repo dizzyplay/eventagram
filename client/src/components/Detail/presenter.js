@@ -20,7 +20,7 @@ export function Presenter(props) {
     window.open("https://www.instagram.com/p/" + code + "/");
   };
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       {loading ? (
         <div style={{ marginTop: "100px" }}>
           <CircularProgress size={45} />
