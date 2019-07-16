@@ -4,10 +4,10 @@ import {
   SET_CURRENT_FEED,
   FEED_PENDING,
   SET_SERVER_STATE,
-  REFRESH_HASH_FEED,
+  CHANGE_TAG_LOADING_STATUS,
   DELETE_CURRENT_FEED
 } from "../actions";
-import { addCheckedTagList, setBackendWorking } from "./hashtags";
+import { addCheckedTagList } from "./hashtags";
 
 const initialState = {
   cachedFeed: [],
@@ -44,7 +44,7 @@ const selectedFeed = (state = initialState, { type, payload }) => {
         ...state,
         pending: true
       };
-    case REFRESH_HASH_FEED:
+    case CHANGE_TAG_LOADING_STATUS:
       return {
         ...state,
         pending: false
@@ -66,7 +66,7 @@ const setCurrentFeed = feed => ({
 });
 const setPending = () => ({ type: FEED_PENDING });
 const setServer = server => ({ type: SET_SERVER_STATE, payload: server });
-const refreshHashFeed = () => ({ type: REFRESH_HASH_FEED });
+const changeTagLoadingStatus = () => ({ type: CHANGE_TAG_LOADING_STATUS });
 export const deleteCurrentFeed = () => ({ type: DELETE_CURRENT_FEED });
 
 const applyDeleteCurrentFeed = (state, payload) => {
@@ -76,28 +76,29 @@ const applyDeleteCurrentFeed = (state, payload) => {
   };
 };
 
-export const refreshHashFeedAction = name => dispatch => {
+export const changeTagLoadingStatusAction = name => dispatch => {
   dispatch(setPending());
   return refreshHashFeedApi(name).then(data => {
-    dispatch(refreshHashFeed());
+    dispatch(changeTagLoadingStatus());
   });
 };
 
-export const setCurrentFeedAction = feed => dispatch => {
+export const getFeedAction = ({ tagId, force }) => (dispatch, getState) => {
   dispatch(setPending());
-  dispatch(setCurrentFeed(feed));
-};
-
-export const getFeedAction = tagId => dispatch => {
-  dispatch(setPending());
-  // dispatch(setBackendWorking({ status: true, tag_id: tagId }));
-  return fetchFeed(tagId).then(data => {
-    let Feed = {};
-    Feed.tag = data.data.tag;
-    Feed.list = data.data.feed_list;
-    dispatch(addFeedList(Feed));
-    dispatch(setCurrentFeed(Feed));
-  });
+  const cachedFeed = getState().selectedFeed.cachedFeed.filter(
+    feed => feed.tag.id === tagId
+  )[0];
+  if (cachedFeed && !force) {
+    dispatch(setCurrentFeed(cachedFeed));
+  } else {
+    return fetchFeed(tagId).then(data => {
+      let Feed = {};
+      Feed.tag = data.data.tag;
+      Feed.list = data.data.feed_list;
+      dispatch(addFeedList(Feed));
+      dispatch(setCurrentFeed(Feed));
+    });
+  }
 };
 
 export const getFeedAndAddTagAction = tagId => dispatch => {

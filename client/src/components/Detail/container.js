@@ -8,7 +8,7 @@ export function Container() {
   const { selected_feed, pending } = useSelector(state => state.selectedFeed);
   const { hash_tag_list } = useSelector(state => state.hashtags);
   const dispatch = useDispatch();
-  const dispatchFeed = id => dispatch(getFeedAction(id));
+  const dispatchFeed = id => dispatch(getFeedAction({ tagId: id }));
   useEffect(() => {
     if (hash_tag_list.length > 0) dispatchFeed(hash_tag_list[0].id);
     //eslint-disable-next-line

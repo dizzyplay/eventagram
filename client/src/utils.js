@@ -1,3 +1,7 @@
+import XLSX from "xlsx";
+import * as moment from "moment";
+import "moment/locale/ko";
+
 export function getOverlap(arr) {
   let new_list = arr[0];
   for (let i = 1; i < arr.length; i++) {
@@ -17,3 +21,40 @@ function isObjEqual(a, b) {
   }
   return true;
 }
+
+export const fileDown = feed => {
+  const data = convertData(feed.list);
+  let fileName = `${moment(feed.tag.updatedAt).format(
+    "YYYY_MMMM_Do_h:mm a"
+  )}_#${feed.tag.name}`;
+  const ws = XLSX.utils.json_to_sheet(data);
+  const csv = XLSX.utils.sheet_to_csv(ws);
+  const b = new Blob([csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+  const a = document.createElement("a");
+  document.body.appendChild(a);
+  const url = URL.createObjectURL(b);
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 100);
+};
+
+const convertData = list => {
+  // 원본 객체를 손상시키지 않기위해 넣은 코드 이게 없으면 원본객체가 바뀌어버린다.
+  const copy = JSON.stringify(list);
+  const data = JSON.parse(copy);
+
+  const new_data = data.map(f =>
+    Object.assign(f, {
+      takenAt: moment(f.takenAt).format("YYYY MMMM Do, h:mm:ss a"),
+      code: "https://www.instagram.com/p/" + f.code + "/"
+    })
+  );
+  new_data.map(f => delete f.mediaId);
+  return new_data;
+};

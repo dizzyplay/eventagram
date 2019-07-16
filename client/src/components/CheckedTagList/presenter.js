@@ -1,73 +1,42 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Tooltip, Button, makeStyles } from "@material-ui/core";
-import FavoriteBorder from "@material-ui/icons/Favorite";
-import ChatBubble from "@material-ui/icons/ChatBubble";
-import * as moment from "moment";
-import "moment/locale/ko";
+import SmallBubbleCard from "../SmallBubbleCard";
+import { fileDown } from "../../utils";
 
-export function Presenter({ list }) {
-  const useStyles = makeStyles(() => ({
-    root: {},
-    icon: {
-      margin: "3px"
-    }
-  }));
-  const classes = useStyles();
-  const handleUrl = code => {
-    window.open("https://www.instagram.com/p/" + code + "/");
-  };
+export function Presenter({ list, tags }) {
+  const combineTagName = tags.map(t => t.name).join("#");
+  const data = { list, tag: { name: combineTagName } };
   return (
-    <Main>
-      {list.map(feed => (
-        <Tooltip key={feed.id} title={feed.caption ? feed.caption : ""}>
-          <Button
-            style={{ margin: "10px" }}
-            variant={"outlined"}
-            size={"small"}
-            onClick={() => handleUrl(feed.code)}
-          >
-            <Column>
-              <Small>@{feed.username}</Small>
-              <Row>
-                <FavoriteBorder
-                  className={classes.icon}
-                  color={"secondary"}
-                  style={{ fontSize: 10 }}
-                />
-                {feed.likeCount}
-                <ChatBubble
-                  className={classes.icon}
-                  color={"action"}
-                  style={{ fontSize: 11 }}
-                />
-                {feed.commentCount}
-              </Row>
-              <Small>{moment(feed.takenAt).calendar()}</Small>
-            </Column>
-          </Button>
-        </Tooltip>
-      ))}
-    </Main>
+    <Container>
+      <Centered>
+        <button onClick={() => fileDown(data)}>csv로 다운로드</button>
+      </Centered>
+      <Grid>
+        {list.map(feed => (
+          <SmallBubbleCard key={feed.id} feed={feed} />
+        ))}
+      </Grid>
+    </Container>
   );
 }
 
-const Main = styled.div`
+const Grid = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border: 0px solid;
+  border: 0 solid;
 `;
-const Small = styled.span`
-  font-size: 9px;
-`;
-const Column = styled.div`
+
+const Container = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
 `;
 
-const Row = styled.div`
+const Centered = styled.div`
+  margin-top: 0;
+  width: 100%;
   display: flex;
-  flex-direction: row;
+  justify-content: center;
   align-items: center;
 `;

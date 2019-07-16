@@ -1,63 +1,52 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Tooltip, Button, makeStyles } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import FavoriteBorder from "@material-ui/icons/Favorite";
-import ChatBubble from "@material-ui/icons/ChatBubble";
-import * as moment from "moment";
-import "moment/locale/ko";
+import { usePage } from "../../hooks/usePage";
+import SmallBubbleCard from "../SmallBubbleCard";
+import { Row } from "../../styles";
+import { fileDown } from "../../utils";
 
 export function Presenter(props) {
   const { selected_feed, loading } = props;
-  const useStyles = makeStyles(() => ({
-    root: {},
-    icon: {
-      margin: "3px"
-    }
-  }));
-  const classes = useStyles();
-  const handleUrl = code => {
-    window.open("https://www.instagram.com/p/" + code + "/");
-  };
+  const page = usePage(1, selected_feed.list);
   return (
     <div style={{ width: "100%" }}>
       {loading ? (
-        <div style={{ marginTop: "100px" }}>
+        <Centered>
           <CircularProgress size={45} />
-        </div>
+        </Centered>
       ) : (
-        <Main>
-          {selected_feed.length !== 0 &&
-            selected_feed.list.map(feed => (
-              <Tooltip key={feed.id} title={feed.caption ? feed.caption : ""}>
-                <Button
-                  style={{ margin: "10px" }}
-                  variant={"outlined"}
-                  size={"small"}
-                  onClick={() => handleUrl(feed.code)}
+        <Container>
+          <Row>
+            {Array.from({ length: page.allPage }, (v, idx) => idx + 1).map(
+              v => (
+                <button
+                  key={v}
+                  onClick={() => page.handlePage(v)}
+                  style={
+                    page.currentPage + 1 === v
+                      ? { color: "red" }
+                      : { color: "black" }
+                  }
                 >
-                  <Column>
-                    <Small>@{feed.username}</Small>
-                    <Row>
-                      <FavoriteBorder
-                        className={classes.icon}
-                        color={"secondary"}
-                        style={{ fontSize: 10 }}
-                      />
-                      {feed.likeCount}
-                      <ChatBubble
-                        className={classes.icon}
-                        color={"action"}
-                        style={{ fontSize: 11 }}
-                      />
-                      {feed.commentCount}
-                    </Row>
-                    <Small>{moment(feed.takenAt).calendar()}</Small>
-                  </Column>
-                </Button>
-              </Tooltip>
+                  {v}
+                </button>
+              )
+            )}
+            <button onClick={() => fileDown(selected_feed)}>
+              csv 파일 다운로드
+            </button>
+          </Row>
+          <Grid>
+            {page.currentItems.map(feed => (
+              <SmallBubbleCard key={feed.id} feed={feed} />
             ))}
-        </Main>
+            {/*{selected_feed.length !== 0 &&*/}
+            {/*  selected_feed.list.map(feed => (*/}
+            {/*    <SmallBubbleCard key={feed.id} feed={feed} />*/}
+            {/*  ))}*/}
+          </Grid>
+        </Container>
       )}
       {!loading &&
         selected_feed.tag &&
@@ -67,22 +56,23 @@ export function Presenter(props) {
   );
 }
 
-const Main = styled.div`
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const Grid = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   border: 0px solid;
 `;
-const Small = styled.span`
-  font-size: 9px;
-`;
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
 
-const Row = styled.div`
+const Centered = styled.div`
+  margin-top: 100px;
+  width: 100%;
   display: flex;
-  flex-direction: row;
+  justify-content: center;
   align-items: center;
 `;

@@ -21,7 +21,7 @@ function App() {
   );
   const dispatch = useDispatch();
   const dispatchAddTagList = () => dispatch(addTagListAction());
-  const dispatchGetFeed = id => dispatch(getFeedAction(id));
+  const dispatchGetFeed = params => dispatch(getFeedAction(params));
   const dispatchServer = server => dispatch(setServerAction(server));
   useEffect(() => {
     dispatchAddTagList();
@@ -31,7 +31,7 @@ function App() {
       dispatchServer("completed");
       setTimeout(() => {
         dispatchServer("");
-        dispatchGetFeed(data.job.data.hash_tag_id);
+        dispatchGetFeed({ tagId: data.job.data.hash_tag_id, force: true });
         dispatch(setBackendWorking({ status: false, tag_id: null }));
       }, 2000);
     });
@@ -41,20 +41,20 @@ function App() {
     });
     //eslint-disable-next-line
   }, []);
-  const getOrFetchFeed = id => {
-    dispatchGetFeed(id);
-  };
   return (
     <>
       {pending ? (
-        <CircularProgress size={100} />
+        <CircularProgress size={25} />
       ) : (
         <AppContainer>
           <FixedSeparatedContainer>
             <>
               <HashTagSearch />
               {hash_tag_list.map(tag => (
-                <Link key={tag.id} onClick={() => getOrFetchFeed(tag.id)}>
+                <Link
+                  key={tag.id}
+                  onClick={() => dispatchGetFeed({ tagId: tag.id })}
+                >
                   <HashTagCard
                     id={tag.id}
                     name={tag.name}

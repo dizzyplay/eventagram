@@ -90,9 +90,6 @@ export function HashTagCard(props) {
       dispatchDeleteCurrentFeed();
     }
   };
-  const handleCheck = () => {
-    dispatchGetFeed(hashtag.id);
-  };
   return (
     <>
       {loading ? (
@@ -118,7 +115,7 @@ export function HashTagCard(props) {
                     checkedTagList.filter(tag => tag.id === hashtag.id)
                       .length !== 0
                   }
-                  onChange={handleCheck}
+                  onChange={() => dispatchGetFeed(hashtag.id)}
                   onClick={e => {
                     e.stopPropagation();
                   }}

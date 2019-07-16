@@ -16,5 +16,5 @@ export function Container() {
     const list = filteredFeed.map(v => v && v.list);
     setFilteredList(getOverlap(list));
   }, [cachedFeed, checkedTagList]);
-  return <Presenter list={filteredList} />;
+  return <Presenter list={filteredList} tags={checkedTagList} />;
 }

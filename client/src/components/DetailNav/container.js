@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Presenter } from "./presenter";
 import { useDispatch, useSelector } from "react-redux";
-import { refreshHashFeedAction } from "../../module/selectedFeed";
+import { changeTagLoadingStatusAction } from "../../module/selectedFeed";
 import { setBackendWorking } from "../../module/hashtags";
 
 export function Container() {
@@ -10,9 +10,10 @@ export function Container() {
   );
   const { isBackendWorking } = useSelector(state => state.hashtags);
   const dispatch = useDispatch();
-  const dispatchRefresh = tagName => dispatch(refreshHashFeedAction(tagName));
+  const dispatchChangeTagLoadingStatus = tagName =>
+    dispatch(changeTagLoadingStatusAction(tagName));
   const handleRefresh = tag => {
-    dispatchRefresh(tag.name);
+    dispatchChangeTagLoadingStatus(tag.name);
     dispatch(setBackendWorking({ status: true, tag_id: tag.id }));
   };
   return (
