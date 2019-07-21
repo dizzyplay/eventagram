@@ -1,6 +1,6 @@
 import * as axios from "axios";
 
-const base_url = "http://10.0.1.13:8000";
+const base_url = "http" + process.env.REACT_APP_API_ENDPOINT;
 
 export async function getHashInfo(q) {
   return await axios.get(base_url + "/search_tag?q=" + q);

@@ -12,7 +12,7 @@ import CheckedTagNav from "./CheckedTagNav";
 import CheckedTagList from "./CheckedTagList";
 import socketIOClient from "socket.io-client";
 
-const url = "ws://10.0.1.13:8000";
+const url = "ws" + process.env.REACT_APP_API_ENDPOINT;
 const socket = socketIOClient(url);
 
 function App() {

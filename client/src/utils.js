@@ -29,12 +29,12 @@ export const fileDown = feed => {
   )}_#${feed.tag.name}`;
   const ws = XLSX.utils.json_to_sheet(data);
   const csv = XLSX.utils.sheet_to_csv(ws);
-  const b = new Blob([csv], {
+  const csvBlob = new Blob(["\ufeff" + csv], {
     type: "text/csv;charset=utf-8;"
   });
   const a = document.createElement("a");
   document.body.appendChild(a);
-  const url = URL.createObjectURL(b);
+  const url = URL.createObjectURL(csvBlob);
   a.href = url;
   a.download = fileName;
   a.click();
@@ -45,13 +45,13 @@ export const fileDown = feed => {
 };
 
 const convertData = list => {
-  // 원본 객체를 손상시키지 않기위해 넣은 코드 이게 없으면 원본객체가 바뀌어버린다.
+  // 원본 객체를 손상시키지 않기위해 넣은 코드 이게 없으면 원본객체가 원본객체가 바뀐다.
   const copy = JSON.stringify(list);
   const data = JSON.parse(copy);
 
   const new_data = data.map(f =>
     Object.assign(f, {
-      takenAt: moment(f.takenAt).format("YYYY MMMM Do, h:mm:ss a"),
+      takenAt: moment(f.takenAt).format("YYYY-MM-DD-HH:mm"),
       code: "https://www.instagram.com/p/" + f.code + "/"
     })
   );
