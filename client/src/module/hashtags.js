@@ -6,7 +6,7 @@ import {
   SEARCH_PENDING,
   REFRESH_TAG,
   DELETE_TAG,
-  ADD_TAG_CHECKED_LIST,
+  TOGGLE_TAG_CHECKED_LIST,
   SET_BACKEND_WORK,
   OK
 } from "../actions";
@@ -21,8 +21,8 @@ const initialState = {
 
 const hashtags = (state = initialState, { type, payload }) => {
   switch (type) {
-    case ADD_TAG_CHECKED_LIST:
-      return applyAddCheckedTagList(state, payload);
+    case TOGGLE_TAG_CHECKED_LIST:
+      return applyToggleCheckedTagList(state, payload);
     case ADD_TAG_LIST:
       return {
         ...state,
@@ -95,11 +95,11 @@ export const setBackendWorking = flag => ({
 });
 export const refreshTag = tag => ({ type: REFRESH_TAG, payload: tag });
 export const addCheckedTagList = tag => ({
-  type: ADD_TAG_CHECKED_LIST,
+  type: TOGGLE_TAG_CHECKED_LIST,
   payload: tag
 });
 
-const applyAddCheckedTagList = (state, payload) => {
+const applyToggleCheckedTagList = (state, payload) => {
   let temp = null;
   if (state.checkedTagList.filter(tag => tag.id === payload.id).length !== 0) {
     temp = [...state.checkedTagList.filter(tag => tag.id !== payload.id)];
