@@ -55,6 +55,12 @@ export default () => {
     dispatchTagInfo(tag);
     setTag("");
   };
+  const handleKeyPress = e => {
+    if (e.key === "Enter") {
+      dispatchTagInfo(tag);
+      setTag("");
+    }
+  };
   return (
     <Container>
       <Paper className={classes.root}>
@@ -62,6 +68,7 @@ export default () => {
           className={classes.input}
           placeholder={"여기서 해시태그 검색 "}
           onChange={handleChange}
+          onKeyPress={handleKeyPress}
           value={tag}
         />
         {search_pending ? (
