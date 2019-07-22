@@ -26,7 +26,10 @@ createConnection(connectionOptions)
   .then(() => {
     console.log("db connected!!!");
   })
-  .catch(err => console.log(err));
+  .catch(err =>{
+    console.log('db connect error!!');
+    console.log(err)
+  } );
 
 app.get("/", async (req, res) => {
   console.log("ok");
@@ -105,7 +108,7 @@ app.post("/auth", async (req, res) => {
   res.send({ result });
 });
 
-http.listen(8000, () => {
+http.listen(6781, () => {
   console.log("server start ...");
 });
 

@@ -5,7 +5,7 @@ const connectionOptions:ConnectionOptions = {
   database: "test_db",
   synchronize: true,
   port: 5432,
-  host: "localhost",
+  host: "db",
   username: "postgres",
   password:  "",
   migrationsTableName: "my_migration_table",

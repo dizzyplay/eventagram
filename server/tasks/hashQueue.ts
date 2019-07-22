@@ -4,7 +4,12 @@ import {saveMedia} from "../views/dbTask";
 
 const Bull = require("bull");
 
-const tagSearchQueue = new Bull("get-hash-tag-result");
+const tagSearchQueue = new Bull("get-hash-tag-result",{
+  redis:{
+    host:'redis',
+    port:6379
+  }
+});
 
 tagSearchQueue.process(async (job, done) => {
   const search_term = job.data.search_term;

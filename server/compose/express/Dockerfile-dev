@@ -1,0 +1,6 @@
+FROM node:lts
+
+WORKDIR /app
+RUN npm install -g yarn
+ADD compose/express/start-dev.sh /start-dev.sh
+RUN chmod +x /*.sh

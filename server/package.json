@@ -10,6 +10,7 @@
     "bull": "^3.10.0",
     "express": "^4.17.1",
     "instagram-private-api": "^1.14.1",
+    "nodemon": "^1.19.1",
     "pg": "^7.11.0",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^2.2.0",
