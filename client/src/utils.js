@@ -58,3 +58,29 @@ const convertData = list => {
   new_data.map(f => delete f.mediaId);
   return new_data;
 };
+
+export const getQuantityFeedByDate = (obj, max) => {
+  if (!max) max = 9;
+  const data = [];
+  _map(obj, f => {
+    if (data.length > max) return true;
+    const moment_date = moment(f.takenAt).format("YYYY-MM-DD");
+    if (data.filter(v => v.date === moment_date).length === 0) {
+      data.push({ date: moment_date, amount: 1 });
+    } else {
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].date === moment_date) {
+          data[i].amount += 1;
+          break;
+        }
+      }
+    }
+  });
+  return data;
+};
+
+function _map(list, iter) {
+  for (let i = 0; i < list.length; i++) {
+    if (iter(list[i])) break;
+  }
+}

@@ -5,6 +5,7 @@ import { usePage } from "../../hooks/usePage";
 import SmallBubbleCard from "../SmallBubbleCard";
 import { Row } from "../../styles";
 import { fileDown } from "../../utils";
+import { FeedChart } from "../FeedChart";
 
 export function Presenter(props) {
   const { selected_feed, loading } = props;
@@ -17,6 +18,9 @@ export function Presenter(props) {
         </Centered>
       ) : (
         <Container>
+          <div>
+            <FeedChart feedList={selected_feed.list} />
+          </div>
           <Row>
             {Array.from({ length: page.allPage }, (v, idx) => idx + 1).map(
               v => (
