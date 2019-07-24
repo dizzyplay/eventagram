@@ -6,8 +6,9 @@ createConnection(connectionOptions)
     console.log("db connected!!!");
     const Fetch=async ()=>{
       const ig = await readSession();
-      const ts = ig.feed.tag('오그래놀라과일')
-      console.log(await ts.request())
+      const ts = ig.feed.tag('키친인큐베이터');
+      const result = await ts.request()
+      result.items.map(f=>console.log(`https://www.instagram.com/p/${f.code}/ \n ${f.user.username}`))
     }
 
     Fetch();
