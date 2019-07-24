@@ -12,7 +12,6 @@ export function FeedChart(props) {
   const handleChange = e => {
     setMax(e.target.value);
     data = getQuantityFeedByDate(props.feedList, max);
-    console.log(max);
   };
   return (
     <>
