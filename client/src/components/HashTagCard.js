@@ -130,9 +130,9 @@ export function HashTagCard(props) {
                     {hashtag.mediaCount}
                   </Typography>
                   <Column>
-                    <button onClick={handleRefresh}>refresh</button>
+                    <button onClick={handleRefresh}>새로고침</button>
                     <button onClick={e => handleDelete(e, hashtag.id)}>
-                      delete
+                      삭제
                     </button>
                   </Column>
                 </div>
