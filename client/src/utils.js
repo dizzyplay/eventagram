@@ -48,7 +48,6 @@ const convertData = list => {
   // 원본 객체를 손상시키지 않기위해 넣은 코드 이게 없으면 원본객체가 원본객체가 바뀐다.
   const copy = JSON.stringify(list);
   const data = JSON.parse(copy);
-
   const new_data = data.map(f =>
     Object.assign(f, {
       takenAt: moment(f.takenAt).format("YYYY-MM-DD-HH:mm"),
