@@ -1,10 +1,3 @@
-TODO
-- 태그 피드 리프레시
-- 태그피드 날짜별 정렬 및 보기
-- 랜덤 뽑기
-- 여러 태그 같이 보기 (중복제거)
-- 디테일뷰 캐싱하기 
+yarn build
 
-COMPLETE
-- detail 로딩구현 
-- 왼쪽 사이드 메뉴 delete 로딩구현
+use public/index.html 
