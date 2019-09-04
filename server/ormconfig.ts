@@ -1,13 +1,13 @@
 import { ConnectionOptions } from "typeorm";
 
-const connectionOptions:ConnectionOptions = {
+const connectionOptions: ConnectionOptions = {
   type: "postgres",
   database: "postgres",
   synchronize: true,
   port: 5432,
   host: "db",
   username: "postgres",
-  password:  "",
+  password: "",
   migrationsTableName: "my_migration_table",
   entities: ["entity/*.ts"],
   migrations: ["migration/**/*.ts"],
