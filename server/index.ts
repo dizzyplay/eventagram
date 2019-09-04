@@ -8,6 +8,7 @@ import HTS from "./tasks/hashQueue";
 import { saveHashTag } from "./views/dbTask";
 import { HashTag } from "./entity/HashTag";
 import { Media } from "entity/Media";
+import {getNowKoreaDate} from "./utils";
 
 const app = require("express")();
 const http = require("http").createServer(app);
@@ -21,7 +22,8 @@ app.use((req, res, next) => {
 });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// 이거 없으면 에러남
+
+//db connection
 createConnection(connectionOptions)
   .then(() => {
     console.log("db connected!!!");
@@ -32,7 +34,6 @@ createConnection(connectionOptions)
   } );
 
 app.get("/", async (req, res) => {
-  console.log("ok");
   const allTags = await HashTag.find({order:{id:"DESC"}});
   res.send(allTags);
 });
@@ -56,7 +57,6 @@ app.get("/hash_feed", async (req, res) => {
 app.get("/hash_feed_refresh", async (req, res) => {
   let result = { data: null, info: "" };
   const q = req.query.q;
-  console.log("hash feed refresh: " + q);
   try {
     await searchTagInfo(q);
     const hashTagRes = await HashTag.findOneOrFail({ where: { name: q } });
@@ -66,10 +66,10 @@ app.get("/hash_feed_refresh", async (req, res) => {
     await HTS.add({ search_term: q, hash_tag_id:hashTagRes.id });
   } catch (e) {
     console.log(
-      "해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다. 혹은 인증부분 확인 바람."
+      `[${getNowKoreaDate()}] 해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다. 혹은 인증부분 확인 바람.`
     );
     result.info =
-      "해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다. 혹은 인증부분 확인 바람.";
+      `[${getNowKoreaDate()}] 해당 해시 태그가 db에 존재하지 않거나 작업중 문제가 발생했습니다. 혹은 인증부분 확인 바람.`;
   }
   res.send({ result });
 });
@@ -89,7 +89,7 @@ app.get("/search_tag", async (req, res) => {
     }
     res.send({ hashTag });
   }catch (e) {
-    console.log('auth 설정이 필요합니다')
+    console.log(`[${getNowKoreaDate()}] auth 설정이 필요합니다`);
     res.send({message:'Need to set auth'})
   }
 });

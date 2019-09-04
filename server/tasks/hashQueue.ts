@@ -1,7 +1,7 @@
 import { HashTag } from "../entity/HashTag";
 import { refreshHashFeed } from "../api/refreshHashFeed";
 import {saveMedia} from "../views/dbTask";
-
+import {getNowKoreaDate} from "../utils";
 const Bull = require("bull");
 
 const tagSearchQueue = new Bull("get-hash-tag-result",{
@@ -27,14 +27,12 @@ tagSearchQueue.on("completed", async (job, result) => {
   });
   result.data.map(async v => {
     await saveMedia(hashTag.name,v)
-    // await saveMedia(hashTag.name, v);
   });
   hashTag.isProcessing = false;
   await hashTag.save();
-  console.log("작업완료");
   console.log(`job id : ${job.id} is complete`);
   console.log(`search term is ${result.search_term}`);
-  console.log("job complete and result length is " + result.data.length);
+  console.log(`[${getNowKoreaDate()}] job complete and result length is ${result.data.length}`);
 });
 
 export default tagSearchQueue;

@@ -1,6 +1,5 @@
 import { HashTag } from "../entity/HashTag";
 import { Media } from "../entity/Media";
-import {Hash} from "crypto";
 
 interface Imedia {
   media_id: string;
