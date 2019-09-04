@@ -1,12 +1,12 @@
-import {User} from "./entity/User";
+import { User } from "./entity/User";
 
 const ipa = require("instagram-private-api");
 import { sessionSave } from "./utils";
 
-export async function auth(id, password) {
+export async function instagramLogin(id, password) {
   const ig = new ipa.IgApiClient();
-  const user =await new User();
-  user.username=id;
+  const user = await new User();
+  user.username = id;
   await user.save();
   ig.state.generateDevice(id);
   ig.request.end$.subscribe(async () => {
@@ -19,7 +19,7 @@ export async function auth(id, password) {
       adid: ig.state.adid,
       build: ig.state.build
     };
-    await sessionSave(id,JSON.stringify(cookies), JSON.stringify(state));
+    await sessionSave(id, JSON.stringify(cookies), JSON.stringify(state));
   });
   try {
     return await ig.account.login(id, password);
@@ -30,7 +30,7 @@ export async function auth(id, password) {
 
 export async function readSession() {
   const ig = new ipa.IgApiClient();
-  const user = await User.findOne({where:{username:'testmanvovo'}})
+  const user = await User.findOne({ where: { username: "testmanvovo" } });
   let cookies = user.cookies;
   let state: any = user.state;
 
@@ -55,7 +55,11 @@ export async function readSession() {
       adid: ig.state.adid,
       build: ig.state.build
     };
-    await sessionSave(user.username,JSON.stringify(cookies), JSON.stringify(state));
+    await sessionSave(
+      user.username,
+      JSON.stringify(cookies),
+      JSON.stringify(state)
+    );
   });
   return ig;
 }

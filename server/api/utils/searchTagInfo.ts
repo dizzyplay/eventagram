@@ -1,4 +1,4 @@
-import { readSession } from "../auth";
+import { readSession } from "../../auth";
 
 export async function searchTagInfo(q: string) {
   const ig = await readSession();
