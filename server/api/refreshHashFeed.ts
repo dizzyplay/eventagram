@@ -1,4 +1,5 @@
 import { readSession } from "../auth";
+import {getNowKoreaDate} from "../utils";
 
 export async function refreshHashFeed(q, job?) {
   const ig = await readSession();
@@ -20,7 +21,7 @@ export async function refreshHashFeed(q, job?) {
               data.caption && data.caption.text ? data.caption.text : null
           });
         });
-        console.log(new Date()+"[리프레시 처리중] 해시태그피드 배열길이 : " + feed.length);
+        console.log(`[${getNowKoreaDate()}] [리프레시 처리중] 해시태그피드 배열길이 : ${feed.length}`);
         if (arr.length > 500) {
           sub.unsubscribe();
           resolve(arr);
