@@ -77,16 +77,21 @@ app.get("/hash_feed_refresh", async (req, res) => {
 app.get("/search_tag", async (req, res) => {
   const q = req.query.q;
   console.log("search hash tag: " + q);
-  const result = await searchTagInfo(q);
-  let hashTag = null
-  if (result) {
-    const hash = {
-      name: result.name,
-      media_count: result.media_count
-    };
-    hashTag = await saveHashTag(hash);
+  try{
+    const result = await searchTagInfo(q);
+    let hashTag = null
+    if (result) {
+      const hash = {
+        name: result.name,
+        media_count: result.media_count
+      };
+      hashTag = await saveHashTag(hash);
+    }
+    res.send({ hashTag });
+  }catch (e) {
+    console.log('auth 설정이 필요합니다')
+    res.send({message:'Need to set auth'})
   }
-  res.send({ hashTag });
 });
 
 app.post('/delete_tag',async (req,res)=>{
