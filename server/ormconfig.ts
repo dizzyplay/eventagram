@@ -9,7 +9,7 @@ const connectionOptions: ConnectionOptions = {
   username: "postgres",
   password: "",
   migrationsTableName: "my_migration_table",
-  entities: ["entity/*.ts"],
+  entities: [__dirname + "entity/*.*"],
   migrations: ["migration/**/*.ts"],
   subscribers: ["subscriber/**/*.ts"],
   cli: {

@@ -6,10 +6,11 @@ volumes:
 
 services:
   express:
+    restart: always
     build:
       context: .
-      dockerfile: ./compose/express/Dockerfile-dev
-    command: /start-dev.sh
+      dockerfile: ./compose/express/Dockerfile
+    command: /start.sh
     depends_on:
       - db
       - redis
@@ -25,7 +26,8 @@ services:
       - postgres_db:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER:postgres
-      - POSTGRES_DB:test_db
+      - POSTGRES_DB:postgres
   redis:
+    restart: always
     image: redis:5.0-alpine
     container_name: "my_redis"
