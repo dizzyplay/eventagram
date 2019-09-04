@@ -2,10 +2,10 @@ import { ConnectionOptions } from "typeorm";
 
 const connectionOptions:ConnectionOptions = {
   type: "postgres",
-  database: "test_db",
+  database: "postgres",
   synchronize: true,
   port: 5432,
-  host: "localhost",
+  host: "db",
   username: "postgres",
   password:  "",
   migrationsTableName: "my_migration_table",

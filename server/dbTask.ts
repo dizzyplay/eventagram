@@ -1,6 +1,6 @@
-import { HashTag } from "../entity/HashTag";
-import { Media } from "../entity/Media";
-import {Hash} from "crypto";
+import { HashTag } from "./entity/HashTag";
+import { Media } from "./entity/Media";
+import { getNowKoreaDate } from "./utils";
 
 interface Imedia {
   media_id: string;
@@ -30,7 +30,7 @@ export async function upsertMedia(hashtag: string, media: Imedia) {
   const h = await HashTag.findOneOrFail({ where: { name: hashtag } });
   try {
     const media_obj = await Media.findOneOrFail({
-      where: { mediaId: media.media_id,hashtag:h }
+      where: { mediaId: media.media_id, hashtag: h }
     });
     media_obj.username = media.username;
     media_obj.mediaId = media.media_id;
@@ -55,9 +55,11 @@ export async function upsertMedia(hashtag: string, media: Imedia) {
   }
 }
 
-export async function saveMedia(hashtag:string,media:Imedia){
-  try{
-    const hashtag_obj = await HashTag.findOneOrFail({where:{name:hashtag}});
+export async function saveMedia(hashtag: string, media: Imedia) {
+  try {
+    const hashtag_obj = await HashTag.findOneOrFail({
+      where: { name: hashtag }
+    });
     const media_obj = new Media();
     media_obj.username = media.username;
     media_obj.mediaId = media.media_id;
@@ -68,8 +70,8 @@ export async function saveMedia(hashtag:string,media:Imedia){
     media_obj.caption = media.caption;
     media_obj.hashtag = hashtag_obj;
     await media_obj.save();
-  }catch (e) {
-    console.log(e)
-    console.log('Save 작업중 에러 발생!!!')
+  } catch (e) {
+    console.log(e);
+    console.log(`[${getNowKoreaDate()}] Does not exist a hash tag`);
   }
 }
