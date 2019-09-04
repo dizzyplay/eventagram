@@ -2,7 +2,7 @@
 docker-compose up --build --detach
 
 - tsconfig.json  
-  entities: [__dirname + "entity/*.*"],
+  entities: [__dirname + "/entity/*.*"],
   
 - db setting file  
 ormconfig.ts
